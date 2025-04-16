@@ -13,5 +13,5 @@ Sistema diseñado para ayudar a copropietarios y el control de un micromarket y 
 - **Base de datos:**
 - **Otros:** FontAwesome, DomPDF
 ## Usuario de prueba
-**Usuario** 
-**Contraseña** 
+- **Usuario:** 
+- **Contraseña:** 
