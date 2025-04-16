@@ -9,8 +9,8 @@ Sistema diseñado para ayudar a copropietarios y el control de un micromarket y 
 - Interfaz intuitiva y responsive
 ## Tecnologias usadas
 - **Backend:** Laravel 12 (PHP)
-- **Frontend:**
-- **Base de datos:**
+- **Frontend:** Vue
+- **Base de datos:** MySQL
 - **Otros:** FontAwesome, DomPDF
 ## Usuario de prueba
 - **Usuario:** 
