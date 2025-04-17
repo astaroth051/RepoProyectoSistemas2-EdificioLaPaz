@@ -14,21 +14,20 @@
           </div>
 
           <div class="container">
-            <label for="nombre"><b>Username</b></label>
-            <input type="mail" placeholder="Ingrese Correo" name="nombre" required>
+            <label for="carnet"><b>Carnet</b></label>
+            <input type="text" placeholder="Ingrese su Carnet" name="carnet" id="carnet" maxlength="15" pattern="\d+" required>
 
             <label for="psw"><b>Contraseña</b></label>
             <input type="password" placeholder="Ingrese contraseña" name="psw" required>
 
-            <button type="submit">Login</button>
+            <button type="submit">Iniciar Sesion</button>
             <label>
               <input type="checkbox" name="recordar"> Recuerdame
             </label>
           </div>
 
           <div class="container">
-            <button type="button" class="cancelbtn">Cancel</button>
-            <span class="psw">No me <a href="#">acuerdo</a></span>
+            <span class="psw"><a href="#">No me acuerdo</a></span>
           </div>
         </form>
       </div>
@@ -48,6 +47,12 @@
 </template>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dniInput = document.getElementById('carnet');
+    dniInput.addEventListener('input', () => {
+      dniInput.value = dniInput.value.replace(/\D/g, '');
+    });
+  });
 export default {
   name: 'Welcome',
 }
@@ -129,7 +134,7 @@ form {
   background-color: #6DAEDB;
   font-size: 1.2rem;
 }
-input[type=mail], input[type=password] {
+input[type=text], input[type=password] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -150,11 +155,6 @@ button {
 }
 button:hover {
   opacity: 0.8;
-}
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
 }
 .titulo-logo {
   display: flex;
