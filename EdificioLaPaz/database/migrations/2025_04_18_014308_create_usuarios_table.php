@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('apellido', 100);
             $table->string('telefono', 8);
             $table->string('correo', 100)->unique('correo');
-            $table->string('contraseña', 100);
+            $table->string('contrasena', 100);
             $table->string('rol', 50);
             $table->integer('departamento_id')->nullable()->index('departamento_id');
         });
