@@ -1,5 +1,11 @@
 import { createApp } from 'vue';
-import App from './components/Welcome.vue';
+import Welcome from './components/Welcome.vue';
+import Dashboard from './components/DashBoard.vue';
 
-const app = createApp(App);
-app.mount('#welcome');
+if (document.querySelector('#welcome')) {
+  createApp(Welcome).mount('#welcome');
+}
+
+if (document.querySelector('#dashboard')) {
+  createApp(Dashboard).mount('#dashboard');
+}

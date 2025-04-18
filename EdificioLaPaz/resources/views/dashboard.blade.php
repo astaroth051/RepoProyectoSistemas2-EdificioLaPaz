@@ -8,6 +8,6 @@
 </head>
 <body>
     <!-- Este es el contenedor donde se montará Vue -->
-    <div id="welcome"></div>
+    <div id="dashboard"></div>
 </body>
 </html>

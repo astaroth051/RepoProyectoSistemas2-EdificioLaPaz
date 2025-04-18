@@ -75,7 +75,7 @@ export default {
 #h1Bienvenida {
   color: black;
   padding-left: 20px;
-  font-size: 2em;
+  font-size: 3em;
   font-weight: bold;
 }
 #h1Sesion {
@@ -90,9 +90,11 @@ footer {
   justify-content: space-between;
   align-items: center;
   background-color: #f0f0f0;
-  padding: 20px 40px;
+  padding: 10px 20px;
   border-radius: 5px;
   flex-wrap: wrap;
+  text-align: center;
+  flex-shrink: 0;
 }
 .footer-info {
   display: flex;
@@ -116,10 +118,6 @@ header{
   padding: 20px;
   border-radius: 5px;
   background-image: url("https://i.pinimg.com/originals/8d/e5/5a/8de55a489bae9f0f174145165578c3b6.jpg");
-}
-footer {
-  text-align: center;
-  flex-shrink: 0;
 }
 .container {
   display: flex;
