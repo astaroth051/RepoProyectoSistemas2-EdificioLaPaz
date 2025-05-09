@@ -12,6 +12,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 });
-
+Route::get('/register-user', function () {
+    return Inertia::render('auth/register-user'); // Asegúrate de que coincida con la ruta del componente TSX
+})->name('register-user');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/client.php';

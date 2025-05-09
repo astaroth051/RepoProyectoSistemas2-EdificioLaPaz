@@ -28,12 +28,6 @@ export default function Welcome() {
                                 >
                                     Iniciar sesión
                                 </Link>
-                                <Link
-                                    href={route('register')}
-                                    className="rounded px-5 py-2 text-sm text-white bg-green-600 hover:bg-green-700"
-                                >
-                                    Registrarse
-                                </Link>
                             </>
                         )}
                     </nav>
