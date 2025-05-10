@@ -3,15 +3,15 @@ import { Head } from '@inertiajs/react';
 
 const PlanDePagos: React.FC = () => {
   return (
-    <div className="flex min-h-screen font-sans bg-[#F6F6FA] text-white">
+    <div className="flex flex-col md:flex-row min-h-screen font-sans bg-[#F6F6FA] text-white overflow-x-hidden">
       <Head title="Plan de Pagos" />
 
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
+      <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
         <div>
           <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-center mb-8">Bienvenido</h1>
-          <nav className="flex flex-col gap-4 text-sm font-semibold">
+          <nav className="flex flex-col gap-4 text-sm font-semibold items-center md:items-start">
             <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
             <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
             <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
@@ -21,13 +21,12 @@ const PlanDePagos: React.FC = () => {
       </aside>
 
       {/* Contenido principal */}
-      <main className="flex flex-col p-8 m-auto border-4 border-[#10B981] rounded-lg bg-[#1E3A8A]">
-        <p className="text-2xl text-center mb-6 font-semibold">Plan de Pagos Micromarket Edificio La Paz</p>
-
-        {/* Contenedor responsive */}
-        <div className="flex flex-col md:flex-row md:flex-wrap md:justify-center gap-6">
+      <main className="p-4 sm:p-6 md:p-8 mt-6 overflow-y-auto bg-[#1E3A8A] rounded-lg border-4 border-[#10B981] mx-auto max-w-7xl max-h-[75vh]">
+      <p className="text-2xl text-center mb-6 font-semibold text-white">Plan de Pagos Micromarket Edificio La Paz</p>
+      <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {/* Cuotas */}
-          <div className="bg-white p-6 rounded-lg w-full md:max-w-sm flex flex-col items-center gap-4">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm flex flex-col items-center gap-4">
             <p className="text-[#1E3A8A] text-2xl font-semibold">Cantidad de Cuotas</p>
             {[1, 2, 3, 4, 5].map((num) => (
               <label key={num} className="w-full text-center text-black">
@@ -38,7 +37,7 @@ const PlanDePagos: React.FC = () => {
           </div>
 
           {/* Calendario */}
-          <div className="bg-white p-6 rounded-lg w-full md:max-w-sm">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm">
             <div className="mb-4 flex justify-between items-center">
               <span className="font-semibold text-[#1E3A8A] text-2xl">December 2020</span>
             </div>
@@ -64,7 +63,7 @@ const PlanDePagos: React.FC = () => {
           </div>
 
           {/* Resumen de Pago */}
-          <div className="bg-white p-6 rounded-lg w-full md:max-w-sm flex flex-col items-center gap-2">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm flex flex-col items-center gap-2">
             <p className="text-2xl text-[#1E3A8A] font-semibold">Resumen de Pago</p>
             <div className="text-lg text-black">
               <p><strong>Precio Total:</strong> 100 Bs</p>
@@ -73,7 +72,7 @@ const PlanDePagos: React.FC = () => {
           </div>
 
           {/* Productos en Lista */}
-          <div className="bg-white p-6 rounded-lg w-full md:max-w-sm flex flex-col items-center gap-3">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm flex flex-col items-center gap-3">
             <label htmlFor="productoslista" className="text-2xl text-[#1E3A8A] font-semibold">Productos en Lista</label>
             <select
               id="productoslista"
@@ -91,12 +90,13 @@ const PlanDePagos: React.FC = () => {
           </div>
 
           {/* Botón Confirmar */}
-          <div className="bg-white p-6 rounded-lg w-full md:max-w-sm flex justify-center">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm flex justify-center">
             <button type="submit" className="bg-[#1E3A8A] hover:bg-[#758dcf] text-white py-3 px-6 rounded-2xl text-lg transition">
               Confirmar Plan
             </button>
           </div>
         </div>
+      </div>
       </main>
     </div>
   );
