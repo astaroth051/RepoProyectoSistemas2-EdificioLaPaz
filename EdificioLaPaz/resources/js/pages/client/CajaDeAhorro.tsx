@@ -72,7 +72,7 @@ const CajaDeAhorro: React.FC = () => {
           <nav className="flex flex-col gap-4 text-sm font-semibold items-center md:items-start">
             <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
             <a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>
-            <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
+            <a href="/productos" className="hover:text-[#10B981] text-xl">🛍️ Productos</a>
             <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
           </nav>
         </div>
