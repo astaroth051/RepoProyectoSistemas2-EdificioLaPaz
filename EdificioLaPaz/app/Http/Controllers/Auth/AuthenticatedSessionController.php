@@ -33,7 +33,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        if ($user->rol === 'administrador') {
+            return redirect()->route('dashboard-edificio');
+        } elseif ($user->rol === 'copropietario') {
+            return redirect()->route('dashboard-client');
+        } elseif ($user->rol === 'administrador micromarket') {
+            return redirect()->route('dashboard-micromarket');
+        } else {
+            // Redirección por defecto si el rol no coincide con ninguno de los anteriores
+            return redirect()->intended(route('dashboard'));
+        }
     }
 
     /**

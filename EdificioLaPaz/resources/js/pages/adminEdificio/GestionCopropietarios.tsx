@@ -71,11 +71,11 @@ export default function DashboardEdificio() {
                 <table className="min-w-full divide-y divide-gray-200 text-blue-900">
                 <thead className="bg-gray-100 text-sm uppercase tracking-wider">
                     <tr>
-                    <th className="px-4 py-3 text-left font-medium">Nombre</th>
-                    <th className="px-4 py-3 text-left font-medium">Apellido</th>
-                    <th className="px-4 py-3 text-left font-medium">Departamento</th>
-                    <th className="px-4 py-3 text-left font-medium">Correo</th>
-                    <th className="px-4 py-3 text-center font-medium">Acciones</th>
+                      <th className="px-4 py-3 text-left font-medium">Nombre</th>
+                      <th className="px-4 py-3 text-left font-medium">Apellido</th>
+                      <th className="px-4 py-3 text-left font-medium">Departamento</th>
+                      <th className="px-4 py-3 text-left font-medium">Correo</th>
+                      <th className="px-4 py-3 text-center font-medium">Acciones</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -86,16 +86,10 @@ export default function DashboardEdificio() {
                         <td className="px-4 py-3 whitespace-nowrap">{copro.departamento}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{copro.correo}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-center space-x-2">
-                        <Link
-                            href={`/editar-copropietario`}
-                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                        >
+                        <Link href={`/editar-copropietario`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">
                             Editar
                         </Link>
-                        <button
-                            onClick={() => alert(`Eliminar copropietario: ${copro.nombre}`)}
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                        >
+                        <button onClick={() => alert(`Eliminar copropietario: ${copro.nombre}`)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
                             Eliminar
                         </button>
                         </td>

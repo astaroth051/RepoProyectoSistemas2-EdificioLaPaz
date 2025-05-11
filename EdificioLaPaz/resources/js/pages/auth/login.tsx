@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { LoaderCircle, Eye, EyeOff } from 'lucide-react';
+import { FormEventHandler, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -28,11 +28,17 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         remember: false,
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route('login'), {
             onFinish: () => reset('password'),
         });
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -42,7 +48,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <form className="flex flex-col gap-6 p-6 rounded-lg shadow-lg w-full max-w-md" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email" className="text-[#2cb5eb]">Direccion email</Label> 
+                        <Label htmlFor="email" className="text-[#2cb5eb]">Direccion email</Label>
                         <Input
                             id="email"
                             type="email"
@@ -66,16 +72,26 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 </TextLink>
                             )}
                         </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            tabIndex={2}
-                            autoComplete="current-password"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            placeholder="Contraseña"
-                        />
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                required
+                                tabIndex={2}
+                                autoComplete="current-password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                placeholder="Contraseña"
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                                tabIndex={6}
+                            >
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
                         <InputError message={errors.password} />
                     </div>
 
