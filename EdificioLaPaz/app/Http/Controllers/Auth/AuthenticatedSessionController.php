@@ -33,7 +33,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // Redirigir según el rol
+        switch ($user->rol) {
+            case 'copropietario':
+                return redirect()->intended(route('dashboard-client', absolute: false));
+            case 'administrador':
+            case 'dueño':
+                return redirect()->intended('/dashboard');
+            default:
+                Auth::logout();
+                return redirect('/login')->withErrors(['email' => 'Rol no autorizado.']);
+        }
     }
 
     /**

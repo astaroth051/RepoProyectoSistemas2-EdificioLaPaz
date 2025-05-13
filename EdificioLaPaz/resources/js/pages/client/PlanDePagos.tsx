@@ -15,7 +15,6 @@ const PlanDePagos: React.FC = () => {
             <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
             <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
             <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
-            <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
           </nav>
         </div>
       </aside>
