@@ -86,8 +86,8 @@ export default function DashboardEdificio() {
                         <td className="px-4 py-3 whitespace-nowrap">{copro.departamento}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{copro.correo}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-center space-x-2">
-                        <Link href={`/editar-copropietario`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">
-                            Editar
+                        <Link href={`/editar-copropietario/${copro.id}`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">
+                          Editar
                         </Link>
                         <button onClick={() => alert(`Eliminar copropietario: ${copro.nombre}`)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
                             Eliminar

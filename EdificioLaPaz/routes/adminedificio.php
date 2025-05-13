@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\CopropietarioController;
 
 //admin dashboard
 //ruta protegida
@@ -62,6 +63,8 @@ Route::get('/cajas-ahorro-copropietario', function () {
 Route::get('/agregar-copropietario', function () {
     return Inertia::render('adminEdificio/AgregarCopropietario');
 })->name('agregar-copropietario');
+// Rutas API
+Route::post('/agregar-copropietario', [CopropietarioController::class, 'store'])->name('copropietarios.store');
 
 //editar copropietario
 //ruta protegida
@@ -71,6 +74,9 @@ Route::get('/agregar-copropietario', function () {
     })->name('editar-copropietario');
 });*/
 //ruta sin proteccion
-Route::get('/editar-copropietario', function () {
-    return Inertia::render('adminEdificio/EditarCopropietario');
+Route::get('/editar-copropietario/{id}', function ($id) {
+    return Inertia::render('adminEdificio/EditarCopropietario', ['id' => $id]);
 })->name('editar-copropietario');
+// Rutas API para editar y actualizar copropietario
+Route::get('/api/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
+Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update']);
