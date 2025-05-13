@@ -75,8 +75,6 @@ class CopropietarioController extends Controller
             'password' => 'required|string|min:6',
             'rol' => 'required|string|in:copropietario,administrador,administrador micromarket', // Nuevos roles
         ]);
-
-        // Crear el nuevo copropietario en la tabla 'users'
         $copropietario = new User();
         $copropietario->name = $validated['name'];
         $copropietario->lastname = $validated['lastname'];
@@ -87,6 +85,6 @@ class CopropietarioController extends Controller
         $copropietario->save();
 
         // Retornar una respuesta JSON con el mensaje de éxito
-        return response()->json(['message' => 'Copropietario agregado correctamente', 'copropietario' => $copropietario], 201);
+        return redirect('/gestion-copropietarios');
     }
 }
