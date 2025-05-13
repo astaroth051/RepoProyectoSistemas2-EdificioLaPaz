@@ -45,7 +45,6 @@ Route::middleware(['auth', 'checkRole:copropietario'])->group(function () {
     Route::get('/productos', [ProductoController::class, 'mostrarProductos'])->name('productos');
 });
 
-// Ruta API para obtener datos de productos (accesible para usuarios autenticados)
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/productos', [ProductoController::class, 'index']);
 });
