@@ -61,7 +61,6 @@ export default function CajasAhorroCopropietarios() {
               <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
               <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietario</a>
               <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">🏪 Administrador Micromarket</a>
-              <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
             </nav>
           </div>
         </aside>

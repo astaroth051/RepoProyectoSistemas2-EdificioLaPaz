@@ -1,13 +1,21 @@
 import { useEffect, useState, FormEvent } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import axios from 'axios';
 
-interface Props {
-  id: number;
+interface Copropietario {
+  id_user: number;
+  name: string;
+  lastname: string;
+  telefono: string;
+  email: string;
+  rol: string;
 }
 
-export default function EditarCopropietario({ id }: Props) {
-  const [copropietario, setCopropietario] = useState({
+interface Props {
+  copropietario: Copropietario;
+}
+
+export default function EditarCopropietario({ copropietario }: Props) {
+  const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     telefono: "",
@@ -16,24 +24,38 @@ export default function EditarCopropietario({ id }: Props) {
   });
 
   useEffect(() => {
-    axios.get(`/api/copropietarios/${id}/edit`)
-      .then((res) => setCopropietario(res.data))
-      .catch((err) => console.error("Error al cargar datos:", err));
-  }, [id]);
+    if (copropietario) {
+      setFormData({
+        nombre: copropietario.name || "",
+        apellido: copropietario.lastname || "",
+        telefono: copropietario.telefono || "",
+        email: copropietario.email || "",
+        rol: copropietario.rol || "",
+      });
+    }
+  }, [copropietario]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setCopropietario({ ...copropietario, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    router.post(`/api/copropietarios/${id}/update`, copropietario);
+
+    router.post(`/api/copropietarios/${copropietario.id_user}/update`, {
+      name: formData.nombre,
+      lastname: formData.apellido,
+      telefono: formData.telefono,
+      email: formData.email,
+      rol: formData.rol,
+    });
   };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
       <Head title="Editar Copropietario" />
+
       <main className="flex-1 p-6 md:p-12 bg-[#1E3A8A] border-4 border-[#10B981] text-white rounded-tl-3xl w-full max-w-5xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-8">Editar Copropietario</h2>
 
@@ -44,7 +66,7 @@ export default function EditarCopropietario({ id }: Props) {
               <input
                 type="text"
                 name="nombre"
-                value={copropietario.nombre}
+                value={formData.nombre}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
               />
@@ -54,7 +76,7 @@ export default function EditarCopropietario({ id }: Props) {
               <input
                 type="text"
                 name="apellido"
-                value={copropietario.apellido}
+                value={formData.apellido}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
               />
@@ -64,7 +86,7 @@ export default function EditarCopropietario({ id }: Props) {
               <input
                 type="text"
                 name="telefono"
-                value={copropietario.telefono}
+                value={formData.telefono}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
               />
@@ -74,7 +96,7 @@ export default function EditarCopropietario({ id }: Props) {
               <input
                 type="email"
                 name="email"
-                value={copropietario.email}
+                value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
               />
@@ -83,13 +105,14 @@ export default function EditarCopropietario({ id }: Props) {
               <label className="block font-semibold mb-1">Rol</label>
               <select
                 name="rol"
-                value={copropietario.rol}
+                value={formData.rol}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
               >
                 <option value="">Seleccionar Rol</option>
                 <option value="copropietario">Copropietario</option>
                 <option value="admin">Administrador</option>
+                <option value="administrador micromarket">Administrador Micromarket</option>
               </select>
             </div>
           </div>

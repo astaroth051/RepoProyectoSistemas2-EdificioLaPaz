@@ -24,9 +24,10 @@ Route::get('/dashboard-edificio', function () {
     })->name('gestion-copropietarios');
 });*/
 //ruta sin proteccion
-Route::get('/gestion-copropietarios', function () {
+/*Route::get('/gestion-copropietarios', function () {
     return Inertia::render('adminEdificio/GestionCopropietarios');
-})->name('gestion-copropietarios');
+})->name('gestion-copropietarios');*/
+Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])->name('gestion-copropietarios');
 
 //administrador micromarket
 //ruta protegida
@@ -74,9 +75,9 @@ Route::post('/agregar-copropietario', [CopropietarioController::class, 'store'])
     })->name('editar-copropietario');
 });*/
 //ruta sin proteccion
-Route::get('/editar-copropietario/{id}', function ($id) {
-    return Inertia::render('adminEdificio/EditarCopropietario', ['id' => $id]);
-})->name('editar-copropietario');
+Route::get('/editar-copropietario/{id}', [CopropietarioController::class, 'edit'])
+    ->name('editar-copropietario');
 // Rutas API para editar y actualizar copropietario
-Route::get('/api/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
+Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update']);
+Route::get('/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
 Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update']);

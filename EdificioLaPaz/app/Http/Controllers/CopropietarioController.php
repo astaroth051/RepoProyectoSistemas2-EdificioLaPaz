@@ -6,46 +6,58 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CopropietarioController extends Controller
 {
+    
+    public function index()
+    {
+        $copropietarios = User::select(
+            'id_user as id',
+            'name as nombre',
+            'lastname as apellido',
+            'email as correo'
+        )
+        ->where('rol', 'copropietario')
+        ->get();
+
+        return Inertia::render('adminEdificio/GestionCopropietarios', [
+            'copropietarios' => $copropietarios
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
-        // Validación de los datos
+        $user = User::findOrFail($id);
+
         $validated = $request->validate([
-            'name' => 'required|string|max:100',  // Corregido 'nombre' a 'name'
-            'lastname' => 'required|string|max:100',
-            'telefono' => 'nullable|string|max:20', // Corregido a 'nullable' para teléfono
-            'email' => 'required|email|unique:users,email,' . $id, // Asegúrate de que el correo sea único
-            'rol' => 'required|string|in:copropietario,administrador,administrador micromarket', // Roles válidos
+            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'rol' => 'required|string',
         ]);
 
-        // Actualiza los datos del copropietario
-        $user = User::findOrFail($id);
-        $user->name = $validated['name'];  // Asignación con valores validados
-        $user->lastname = $validated['lastname'];
-        $user->telefono = $validated['telefono'];
-        $user->email = $validated['email'];
-        $user->rol = $validated['rol']; // Asegúrate de que 'rol' esté validado correctamente
-        $user->save();
+        $user->update($validated);
 
-        // Retorna una respuesta JSON para el frontend
-        return response()->json(['message' => 'Copropietario actualizado con éxito']);
+        return redirect()->route('gestion-copropietarios');
     }
 
     public function edit($id)
     {
-        // Obtiene los datos del copropietario
-        $user = User::findOrFail($id);
+        // Si tu campo es 'id_user', usa where
+        $user = User::where('id_user', $id)->firstOrFail();
 
-        // Devuelve los datos como JSON
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,  // Cambiado de 'nombre' a 'name'
-            'lastname' => $user->lastname,
-            'telefono' => $user->telefono,
-            'email' => $user->email,
-            'rol' => $user->rol,
+        return Inertia::render('adminEdificio/EditarCopropietario', [
+            'copropietario' => [
+                'id_user' => $user->id_user,
+                'name' => $user->name,
+                'lastname' => $user->lastname,
+                'telefono' => $user->telefono,
+                'email' => $user->email,
+                'rol' => $user->rol,
+            ]
         ]);
     }
 
@@ -56,9 +68,9 @@ class CopropietarioController extends Controller
 
         // Devuelve los datos del usuario autenticado
         return response()->json([
-            'name' => $user->name,  // Corregido a 'name'
+            'name' => $user->name,
             'lastname' => $user->lastname,
-            'departamento' => 'Depto ' . $user->departamento_id, // Relacionar si tienes el departamento
+            'departamento' => 'Depto ' . $user->departamento_id,
             'email' => $user->email,
             'telefono' => $user->telefono,
         ]);
@@ -73,18 +85,18 @@ class CopropietarioController extends Controller
             'telefono' => 'required|string|max:8',
             'email' => 'required|email|max:100|unique:users,email',
             'password' => 'required|string|min:6',
-            'rol' => 'required|string|in:copropietario,administrador,administrador micromarket', // Nuevos roles
+            'rol' => 'required|string|in:copropietario,administrador,administrador micromarket',
         ]);
+
         $copropietario = new User();
         $copropietario->name = $validated['name'];
         $copropietario->lastname = $validated['lastname'];
         $copropietario->telefono = $validated['telefono'];
         $copropietario->email = $validated['email'];
-        $copropietario->password = bcrypt($validated['password']); // Encriptamos la contraseña
+        $copropietario->password = bcrypt($validated['password']);
         $copropietario->rol = $validated['rol'];
         $copropietario->save();
 
-        // Retornar una respuesta JSON con el mensaje de éxito
         return redirect('/gestion-copropietarios');
     }
 }

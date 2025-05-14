@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Head } from "@inertiajs/react";
 
 interface Copropietario {
  id: number;
@@ -46,9 +47,9 @@ export default function CajasAhorroCopropietarios() {
 
  return (
   <div className="flex flex-col min-h-screen bg-white">
-   <head title="Control Administrador Micromarket" />
+  <Head title="Gestion Administrador Micromarket" />
 
-   <div className="md:flex flex-1">
+  <div className="md:flex flex-1">
     {/* Sidebar */}
     <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
      <div>
@@ -58,14 +59,13 @@ export default function CajasAhorroCopropietarios() {
        <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
        <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietario</a>
        <a href="/cajas-ahorro-copropietario" className="hover:text-[#10B981] text-xl">📊 Cajas de Ahorro Copropietarios</a>
-       <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
       </nav>
      </div>
     </aside>
 
     {/* Main */}
     <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto overflow-x-auto bg-[#1E3A8A] border-2 border-[#10B981] text-white rounded-tl-2xl">
-     <h2 className="text-2xl font-bold text-center mb-4">Administrador Micromarket</h2>
+     <h2 className="text-2xl font-bold text-center mb-4">Gestion Administrador Micromarket</h2>
 
      <div className="mb-4 text-center">
       <input type="text" placeholder="Buscar por nombre o apellido" className="bg-white px-4 py-2 rounded-md border border-gray-300 w-full max-w-md text-black" value={busqueda} onChange={e => setBusqueda(e.target.value)}/>
