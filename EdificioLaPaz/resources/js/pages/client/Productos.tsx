@@ -3,18 +3,18 @@ import axios from "axios";
 import { Head } from '@inertiajs/react';
 
 interface Producto {
-    id: number;
+    id_productos: number;
     nombre: string;
     categoria: string;
     estado: string;
     precio: number;
-    stock: number; // Campo original de la base de datos
+    stock: number;
     imagen: string;
 }
 
 interface ItemCarrito {
     producto: Producto;
-    cantidad: number;  // Para el carrito usamos cantidad, no stock
+    cantidad: number;
 }
 
 export default function Productos() {
@@ -25,20 +25,22 @@ export default function Productos() {
     const [error, setError] = useState("");
     const [codigoFicha, setCodigoFicha] = useState(`FICHA-${Math.floor(Math.random() * 10000)}`);
 
-    // Obtener productos de la API
     const obtenerProductos = async (terminoBusqueda: string = "") => {
         try {
             setCargando(true);
             setError("");
-
-            console.log("Solicitando productos con búsqueda:", busqueda || "ninguna");
-
             const response = await axios.get('/api/productos', {
                 params: { busqueda: terminoBusqueda }
             });
 
-            console.log("Productos recibidos:", response.data);
-            setProductos(response.data);
+            const productosNormalizados = response.data.map((prod: any) => ({
+                ...prod,
+                id: Number(prod.id),
+                precio: Number(prod.precio),
+                stock: Number(prod.stock)
+            }));
+
+            setProductos(productosNormalizados);
         } catch (error) {
             console.error("Error al obtener productos", error);
             setError("No se pudieron cargar los productos. Por favor intenta nuevamente.");
@@ -47,59 +49,114 @@ export default function Productos() {
         }
     };
 
-    // Cargar productos al montar el componente
     useEffect(() => {
         obtenerProductos(busqueda);
     }, [busqueda]);
 
-    // Buscar productos cuando cambia el término de búsqueda
     const buscarProducto = () => {
         obtenerProductos(busqueda);
     };
 
-    // Agregar producto al carrito
     const agregarAlCarrito = (producto: Producto) => {
-        // Buscamos si el producto ya existe en el carrito
-        const existe = carrito.find(item => item.producto.id === producto.id);
-
-        if (existe) {
-            // Si existe, incrementamos su cantidad (pero no duplicamos la fila)
-            const nuevoCarrito = carrito.map(item =>
-                item.producto.id === producto.id
-                    ? {
-                        ...item,
-                        cantidad: item.cantidad + 1 > producto.stock
-                            ? producto.stock // Limitar la cantidad al stock disponible
-                            : item.cantidad + 1
-                    }
-                    : item
+        setCarrito(prevCarrito => {
+            // Buscar si el producto ya está en el carrito
+            const productoExistenteIndex = prevCarrito.findIndex(
+                item => item.producto.id_productos === producto.id_productos
             );
-            setCarrito(nuevoCarrito);
-        } else {
-            // Si no existe, lo agregamos como una nueva fila
-            setCarrito([...carrito, { producto, cantidad: 1 }]);
-        }
+
+            if (productoExistenteIndex >= 0) {
+                // Si existe, actualizamos la cantidad
+                const nuevoCarrito = [...prevCarrito];
+                const itemExistente = nuevoCarrito[productoExistenteIndex];
+
+                // Verificar que no exceda el stock disponible
+                // Se usa producto.stock del producto que se está intentando agregar,
+                // que debería tener la información de stock más actualizada desde la lista de productos.
+                const nuevaCantidad = Math.min(
+                    itemExistente.cantidad + 1,
+                    producto.stock
+                );
+
+                nuevoCarrito[productoExistenteIndex] = {
+                    ...itemExistente,
+                    cantidad: nuevaCantidad
+                };
+
+                return nuevoCarrito;
+            } else {
+                // Si no existe y hay stock, lo agregamos
+                if (producto.stock > 0) {
+                    return [...prevCarrito, { producto, cantidad: 1 }];
+                }
+                // Si el producto no tiene stock, no se agrega al carrito
+                return prevCarrito;
+            }
+        });
     };
 
     const eliminarDelCarrito = (id: number) => {
-        setCarrito(carrito.filter(item => item.producto.id !== id));
+        setCarrito(carrito.filter(item => item.producto.id_productos !== id));
     };
 
     const actualizarCantidad = (productoId: number, nuevaCantidad: number) => {
-        if (nuevaCantidad < 1) return; // No permitir cantidades menores a 1
+        if (nuevaCantidad < 1) { // Si la cantidad es menor a 1, no hacer nada (o podrías eliminarlo si es 0)
+            // Para eliminar, ya existe eliminarDelCarrito. Aquí solo evitamos que sea < 1.
+            return;
+        }
 
         setCarrito(prev =>
-            prev.map(item =>
-                item.producto.id === productoId
-                    ? { ...item, cantidad: Math.min(nuevaCantidad, item.producto.stock) } // Asegurarse de que la cantidad no exceda el stock
-                    : item
-            )
+            prev.map(item => {
+                if (item.producto.id_productos === productoId) {
+                    // Encontrar el producto original en la lista de productos para verificar el stock actual
+                    const productoOriginal = productos.find(p => p.id_productos === productoId);
+                    const cantidadMaxima = productoOriginal ? productoOriginal.stock : item.producto.stock; // Fallback al stock del item si no se encuentra (aunque debería)
+
+                    return {
+                        ...item,
+                        cantidad: Math.min(nuevaCantidad, cantidadMaxima) // No exceder el stock
+                    };
+                }
+                return item;
+            })
         );
     };
 
-    // Calcular el total de la compra
     const totalCompra = carrito.reduce((total, item) =>
         total + (item.producto.precio * item.cantidad), 0);
+
+    const finalizarCompra = async () => {
+        try {
+            if (carrito.length === 0) {
+                alert("No hay productos en el carrito");
+                return;
+            }
+
+            const compra = {
+                codigo_ficha: codigoFicha,
+                productos: carrito.map(item => ({
+                    producto_id: item.producto.id_productos,
+                    cantidad: item.cantidad,
+                    precio_unitario: item.producto.precio,
+                    subtotal: item.producto.precio * item.cantidad
+                })),
+                total: totalCompra,
+                fecha: new Date().toISOString()
+            };
+
+            const response = await axios.post('/api/compras', compra);
+
+            if (response.status === 201) {
+                alert("Compra realizada con éxito!");
+                setCarrito([]);
+                setCodigoFicha(`FICHA-${Math.floor(Math.random() * 10000)}`);
+                // Opcional: Volver a cargar productos para actualizar stock si el backend no lo hace via push
+                // obtenerProductos(busqueda);
+            }
+        } catch (error) {
+            console.error("Error al finalizar compra", error);
+            alert("Ocurrió un error al procesar la compra");
+        }
+    };
 
     return (
         <div className="flex flex-col md:flex-row bg-white min-h-screen">
@@ -148,9 +205,12 @@ export default function Productos() {
                         </div>
                     </div>
 
+                    {/* Carrito de compras */}
                     {carrito.length > 0 && (
                         <section className="bg-white p-6 rounded-xl shadow-md mb-10">
                             <h1 className="text-2xl font-bold text-center text-blue-700 mb-4">Ficha Compra</h1>
+
+                            {/* Encabezados de la tabla */}
                             <div className="grid grid-cols-5 gap-4 font-semibold text-center text-blue-900 mb-2">
                                 <div className="bg-blue-100 p-2 rounded">Producto</div>
                                 <div className="bg-blue-100 p-2 rounded">Cantidad</div>
@@ -159,41 +219,50 @@ export default function Productos() {
                                 <div className="bg-blue-100 p-2 rounded">Acciones</div>
                             </div>
 
-                            {carrito.map((item) => (
-                                <div key={item.producto.id} className="grid grid-cols-5 gap-4 mt-2 text-center items-center">
-                                    <div className="bg-gray-100 p-2 rounded text-blue-800">{item.producto.nombre}</div>
-                                    <div className="bg-gray-100 p-2 rounded text-blue-800 flex justify-center items-center gap-2">
-                                        <button
-                                            onClick={() => actualizarCantidad(item.producto.id, item.cantidad - 1)}
-                                            className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
-                                            disabled={item.cantidad <= 1}
-                                        >
-                                            -
-                                        </button>
-                                        <span>{item.cantidad}</span>
-                                        <button
-                                            onClick={() => actualizarCantidad(item.producto.id, item.cantidad + 1)}
-                                            className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
-                                            disabled={item.cantidad >= item.producto.stock}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                    <div className="bg-gray-100 p-2 rounded text-blue-800">{item.producto.precio} Bs</div>
-                                    <div className="bg-gray-100 p-2 rounded text-blue-800">
-                                        {(item.producto.precio * item.cantidad).toFixed(2)} Bs
-                                    </div>
-                                    <div className="bg-gray-100 p-2 rounded">
-                                        <button
-                                            onClick={() => eliminarDelCarrito(item.producto.id)}
-                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                            {/* Items del carrito */}
+                            {carrito.map((item) => {
+                                const productoEnStock = productos.find(p => p.id_productos === item.producto.id_productos);
+                                const stockDisponible = productoEnStock ? productoEnStock.stock : item.producto.stock; // Usa el stock del producto en la lista, o el del item como fallback
 
+                                return (
+                                    <div key={item.producto.id_productos} className="grid grid-cols-5 gap-4 mt-2 text-center items-center">
+                                        <div className="bg-gray-100 p-2 rounded text-blue-800">{item.producto.nombre}</div>
+                                        <div className="bg-gray-100 p-2 rounded text-blue-800 flex justify-center items-center gap-2">
+                                            <button
+                                                onClick={() => actualizarCantidad(item.producto.id_productos, item.cantidad - 1)}
+                                                className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
+                                                disabled={item.cantidad <= 1}
+                                            >
+                                                -
+                                            </button>
+                                            <span>{item.cantidad}</span>
+                                            <button
+                                                onClick={() => actualizarCantidad(item.producto.id_productos, item.cantidad + 1)}
+                                                className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
+                                                disabled={item.cantidad >= stockDisponible}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                        <div className="bg-gray-100 p-2 rounded text-blue-800">
+                                            {item.producto.precio.toFixed(2)} Bs
+                                        </div>
+                                        <div className="bg-gray-100 p-2 rounded text-blue-800">
+                                            {(item.producto.precio * item.cantidad).toFixed(2)} Bs
+                                        </div>
+                                        <div className="bg-gray-100 p-2 rounded">
+                                            <button
+                                                onClick={() => eliminarDelCarrito(item.producto.id_productos)}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {/* Total y acciones */}
                             <div className="mt-6 flex justify-between items-center border-t pt-4">
                                 <div className="text-lg font-bold">
                                     Código Ficha: <span className="text-blue-700">{codigoFicha}</span>
@@ -204,7 +273,10 @@ export default function Productos() {
                             </div>
 
                             <div className="mt-4 flex justify-end">
-                                <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg">
+                                <button
+                                    onClick={finalizarCompra}
+                                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg"
+                                >
                                     Finalizar Compra
                                 </button>
                             </div>
@@ -235,29 +307,33 @@ export default function Productos() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
                         {productos.map((prod) => (
                             <div
-                                key={prod.id}
+                                key={prod.id_productos}
                                 className="bg-white rounded-xl shadow-lg overflow-hidden text-center hover:shadow-xl transition p-4 relative"
                             >
                                 <img
                                     src={prod.imagen || "https://via.placeholder.com/150?text=Sin+Imagen"}
                                     alt={prod.nombre}
+                                    className="w-full h-48 object-contain mb-4"
                                     onError={(e) => {
                                         const imgElement = e.target as HTMLImageElement;
-                                        imgElement.onerror = null; // Previene bucles infinitos
-                                        imgElement.src = "/images/LogoMarket.png"; // Ruta a tu imagen local predeterminada
+                                        imgElement.onerror = null; // Previene loop infinito si la imagen fallback también falla
+                                        imgElement.src = "/images/LogoMarket.png"; // Asegúrate que esta ruta es correcta en tu proyecto public
                                     }}
                                 />
                                 <div className="space-y-2 text-blue-900">
                                     <p className="font-bold">{prod.nombre}</p>
                                     <p><strong>Categoría:</strong> {prod.categoria || 'General'}</p>
                                     <p><strong>Estado:</strong> {prod.estado}</p>
-                                    <p><strong>Precio:</strong> {prod.precio} Bs</p>
+                                    <p><strong>Precio:</strong> {prod.precio.toFixed(2)} Bs</p>
                                     <p>
                                         <strong>Disponibles:</strong>
                                         <span className={prod.stock > 0 ? 'text-green-600' : 'text-red-600'}>
                                             {" "}{prod.stock || 0}
                                         </span>
                                     </p>
+
+                                    {/* ID oculto en la vista pero presente en el código */}
+                                    <span style={{ display: "none" }}>{prod.id_productos}</span>
 
                                     <button
                                         onClick={() => agregarAlCarrito(prod)}
