@@ -37,10 +37,8 @@ Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
     })->name('administrador-micromarkett');
 });*/
 //ruta sin proteccion
-Route::get('/administrador-micromarket', function () {
-    return Inertia::render('adminEdificio/AdministradorMicromarket');
-})->name('administrador-micromarket');
-
+Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
+    ->name('administrador-micromarket');
 //cajas de ahorro copropietarios
 //ruta protegida
 /*Route::middleware(['auth', 'verified'])->group(function () {
@@ -77,7 +75,8 @@ Route::post('/agregar-copropietario', [CopropietarioController::class, 'store'])
 //ruta sin proteccion
 Route::get('/editar-copropietario/{id}', [CopropietarioController::class, 'edit'])
     ->name('editar-copropietario');
+Route::get('/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
 // Rutas API para editar y actualizar copropietario
 Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update']);
-Route::get('/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
-Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update']);
+// routes/web.php
+Route::post('/copropietarios/{id}/toggle-rol', [CopropietarioController::class, 'toggleRol'])->name('copropietarios.toggle-rol');

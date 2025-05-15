@@ -27,6 +27,17 @@ class CopropietarioController extends Controller
         ]);
     }
 
+    public function indexAdminMicromarket()
+    {
+        $copropietarios = User::select('id_user as id', 'name as nombre', 'lastname as apellido', 'rol')
+            ->whereIn('rol', ['copropietario', 'administrador micromarket'])
+            ->get();
+
+        return Inertia::render('adminEdificio/AdministradorMicromarket', [
+            'copropietarios' => $copropietarios
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -98,5 +109,19 @@ class CopropietarioController extends Controller
         $copropietario->save();
 
         return redirect('/gestion-copropietarios');
+    }
+    public function toggleRol($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->rol === 'copropietario') {
+            $user->rol = 'administrador micromarket';
+        } else {
+            $user->rol = 'copropietario';
+        }
+
+        $user->save();
+
+        return response()->json(['success' => true, 'rol' => $user->rol]);
     }
 }
