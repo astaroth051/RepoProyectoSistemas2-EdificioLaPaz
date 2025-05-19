@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CopropietarioController;
 use App\Http\Controllers\CajaAhorroController;
+use App\Http\Controllers\DashboardEdificioController;
 
 //admin dashboard
 //ruta protegida
@@ -13,9 +14,8 @@ use App\Http\Controllers\CajaAhorroController;
     })->name('dashboard-adminEdificio');
 });*/
 //ruta sin proteccion
-Route::get('/dashboard-edificio', function () {
-    return Inertia::render('adminEdificio/DashboardEdificio');
-})->name('dashboard-edificio');
+Route::get('/dashboard-edificio', [DashboardEdificioController::class, 'index'])
+    ->name('dashboard.edificio');
 
 //gestion copropietarios
 //ruta protegida
@@ -24,10 +24,6 @@ Route::get('/dashboard-edificio', function () {
         return Inertia::render('adminEdificio/GestionCopropietarios');
     })->name('gestion-copropietarios');
 });*/
-//ruta sin proteccion
-/*Route::get('/gestion-copropietarios', function () {
-    return Inertia::render('adminEdificio/GestionCopropietarios');
-})->name('gestion-copropietarios');*/
 Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])->name('gestion-copropietarios');
 
 //administrador micromarket
@@ -48,10 +44,6 @@ Route::get('/administrador-micromarket', [CopropietarioController::class, 'index
         return Inertia::render('adminEdificio/CajasAhorroCopropietario');
     })->name('cajas-ahorro-copropietario');
 });*/
-//ruta sin proteccion
-/*Route::get('/cajas-ahorro-copropietario', function () {
-    return Inertia::render('adminEdificio/CajasAhorroCopropietario');
-})->name('cajas-ahorro-copropietario');*/
 Route::get('/cajas-ahorro-copropietario', [CajaAhorroController::class, 'index']);
 Route::post('/cajas-ahorro/crear', [CajaAhorroController::class, 'crear']);
 Route::post('/cajas-ahorro/activar/{usuario_id}', [CajaAhorroController::class, 'activarCaja']);

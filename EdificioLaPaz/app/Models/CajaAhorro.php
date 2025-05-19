@@ -10,6 +10,8 @@ class CajaAhorro extends Model
 
     public $timestamps = false; 
 
+    protected $primaryKey = 'id_cajas_ahorro';
+
     protected $fillable = ['usuario_id', 'estado', 'fecha_desactivacion'];
 
     public function usuario()

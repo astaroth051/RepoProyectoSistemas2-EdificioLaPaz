@@ -1,14 +1,53 @@
 import { Head } from "@inertiajs/react";
+import { useState, useEffect } from "react";
 
-export default function DashboardEdificio() {
+interface AdminEdificio {
+  name: string;
+  lastname: string;
+  email: string;
+  telefono: string;
+}
+
+interface Props {
+  adminEdificio: AdminEdificio;
+}
+
+export default function DashboardEdificio({ adminEdificio }: Props) {
+  const [recordatorios, setRecordatorios] = useState<string[]>([]);
+  const [nuevoRecordatorio, setNuevoRecordatorio] = useState("");
+
+  // Cargar desde localStorage al iniciar
+  useEffect(() => {
+    const almacenados = localStorage.getItem("recordatorios");
+    if (almacenados) {
+      setRecordatorios(JSON.parse(almacenados));
+    }
+  }, []);
+
+  // Guardar en localStorage cada vez que cambia
+  useEffect(() => {
+    localStorage.setItem("recordatorios", JSON.stringify(recordatorios));
+  }, [recordatorios]);
+
+  const agregarRecordatorio = () => {
+    if (nuevoRecordatorio.trim() === "") return;
+    setRecordatorios([...recordatorios, nuevoRecordatorio.trim()]);
+    setNuevoRecordatorio("");
+  };
+
+  const eliminarRecordatorio = (index: number) => {
+    const actualizado = [...recordatorios];
+    actualizado.splice(index, 1);
+    setRecordatorios(actualizado);
+  };
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
       <Head title="Dashboard Edificio" />
-
-      {/* Sidebar */}
+      {/* Sidebar (sin cambios) */}
       <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
         <div>
-          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4"/>
+          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-center mb-8">Admin Edificio La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
             <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietarios</a>
@@ -27,10 +66,9 @@ export default function DashboardEdificio() {
         <div className="bg-white text-blue-900 rounded-xl p-6 shadow-md mb-6">
           <h3 className="text-xl font-semibold mb-4">👤 Información del Administrador</h3>
           <ul className="space-y-2 text-base">
-            <li><strong>Nombre:</strong> Carlos Mendoza</li>
-            <li><strong>Correo:</strong> carlos.mendoza@edificiolapaz.com</li>
-            <li><strong>Teléfono:</strong> +591 71234567</li>
-            <li><strong>Gestión actual:</strong> 2023 - 2025</li>
+            <li><strong>Nombre:</strong> {adminEdificio.name} {adminEdificio.lastname}</li>
+            <li><strong>Correo:</strong> {adminEdificio.email}</li>
+            <li><strong>Teléfono:</strong> {adminEdificio.telefono}</li>
           </ul>
         </div>
 
@@ -47,20 +85,26 @@ export default function DashboardEdificio() {
 
         {/* Recordatorios importantes */}
         <div className="bg-white text-blue-900 rounded-xl p-6 shadow-md">
-        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold">🔔 Recordatorios Importantes</h3>
-            <button
-            className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg shadow-md text-sm"
-            onClick={() => alert("Aquí podrás agregar un nuevo recordatorio (función futura)")}
-            >
-            + Agregar
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-2 mb-4">
+            <input type="text" value={nuevoRecordatorio} onChange={(e) => setNuevoRecordatorio(e.target.value)} placeholder="Escribe un nuevo recordatorio..."
+              className="flex-1 p-2 rounded-lg border border-gray-300"/>
+            <button className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg shadow-md text-sm" onClick={agregarRecordatorio}>
+              + Agregar
             </button>
-        </div>
-        <ul className="list-disc list-inside space-y-2 text-base">
-            <li>Reunión de copropietarios programada para el 15 de mayo a las 19:00.</li>
-            <li>Se iniciará la limpieza del tanque de agua el 20 de mayo.</li>
-            <li>Recordatorio: el pago de mantenimiento vence el 10 de cada mes.</li>
-        </ul>
+          </div>
+
+          <ul className="list-disc list-inside space-y-2 text-base">
+            {recordatorios.map((recordatorio, index) => (
+              <li key={index} className="flex justify-between items-center">
+                <span>{recordatorio}</span>
+                <button className="text-red-500 text-sm ml-2" onClick={() => eliminarRecordatorio(index)}>Eliminar</button>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>

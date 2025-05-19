@@ -5,8 +5,8 @@ interface Usuario {
   id_user: number;
   name: string;
   lastname: string;
-  cajaAhorro?: {
-    estado: number; // 1 activo, 0 inactivo
+  caja_ahorro?: {
+    estado: number;
     fecha_desactivacion: string | null;
   } | null;
 }
@@ -51,15 +51,9 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
           />
           <h1 className="text-2xl font-bold text-center mb-8">Admin Edificio La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
-            <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">
-              🤝 Gestión de Copropietarios
-            </a>
-            <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">
-              🏪 Administrador Micromarket
-            </a>
-            <a href="/logout" className="hover:text-[#10B981] text-xl">
-              🚪 Cerrar Sesión
-            </a>
+              <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
+            <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietarios</a>
+            <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">🏪 Administrador Micromarket</a>
           </nav>
         </div>
       </aside>
@@ -77,13 +71,8 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
         )}
 
         <div className="mb-6">
-          <input
-            type="text"
-            placeholder="🔍 Buscar copropietario..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="w-full max-w-md px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
-          />
+          <input type="text" placeholder="🔍 Buscar copropietario..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full max-w-md px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"/>
         </div>
 
         <div className="overflow-x-auto">
@@ -99,7 +88,7 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
             </thead>
             <tbody>
               {usuariosFiltrados.map((usuario) => {
-                const caja = usuario.cajaAhorro;
+                const caja = usuario.caja_ahorro;
 
                 return (
                   <tr key={usuario.id_user} className="border-t hover:bg-gray-100 text-gray-800">
@@ -123,26 +112,17 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
                     </td>
                     <td className="px-6 py-4 space-x-2">
                       {!caja && (
-                        <button
-                          onClick={() => crearCaja(usuario.id_user)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
-                        >
+                        <button onClick={() => crearCaja(usuario.id_user)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm">
                           Crear Caja
                         </button>
                       )}
                       {caja && caja.estado === 1 && (
-                        <button
-                          onClick={() => desactivarCaja(usuario.id_user)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
-                        >
+                        <button onClick={() => desactivarCaja(usuario.id_user)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md text-sm">
                           Desactivar Caja
                         </button>
                       )}
                       {caja && caja.estado === 0 && (
-                        <button
-                          onClick={() => activarCaja(usuario.id_user)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
-                        >
+                        <button onClick={() => activarCaja(usuario.id_user)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm">
                           Reactivar Caja
                         </button>
                       )}
