@@ -48,4 +48,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function cajaAhorro()
+    {
+        return $this->hasOne(CajaAhorro::class, 'usuario_id', 'id_user');
+    }
+
 }

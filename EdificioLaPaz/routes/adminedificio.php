@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CopropietarioController;
+use App\Http\Controllers\CajaAhorroController;
 
 //admin dashboard
 //ruta protegida
@@ -39,6 +40,7 @@ Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
 //ruta sin proteccion
 Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
     ->name('administrador-micromarket');
+
 //cajas de ahorro copropietarios
 //ruta protegida
 /*Route::middleware(['auth', 'verified'])->group(function () {
@@ -47,9 +49,13 @@ Route::get('/administrador-micromarket', [CopropietarioController::class, 'index
     })->name('cajas-ahorro-copropietario');
 });*/
 //ruta sin proteccion
-Route::get('/cajas-ahorro-copropietario', function () {
+/*Route::get('/cajas-ahorro-copropietario', function () {
     return Inertia::render('adminEdificio/CajasAhorroCopropietario');
-})->name('cajas-ahorro-copropietario');
+})->name('cajas-ahorro-copropietario');*/
+Route::get('/cajas-ahorro-copropietario', [CajaAhorroController::class, 'index']);
+Route::post('/cajas-ahorro/crear', [CajaAhorroController::class, 'crear']);
+Route::post('/cajas-ahorro/activar/{usuario_id}', [CajaAhorroController::class, 'activarCaja']);
+Route::post('/cajas-ahorro/desactivar/{usuario_id}', [CajaAhorroController::class, 'desactivarCaja']);
 
 //agregar copropietario
 //ruta protegida

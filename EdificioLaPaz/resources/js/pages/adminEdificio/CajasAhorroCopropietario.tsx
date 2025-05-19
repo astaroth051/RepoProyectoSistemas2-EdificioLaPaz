@@ -1,130 +1,168 @@
-import { Head } from "@inertiajs/react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { router, Head } from "@inertiajs/react";
 
-interface Copropietario {
-  id: number;
-  nombre: string;
-  apellido: string;
-  activo: boolean;
-  tiempoInactividad?: string;
+interface Usuario {
+  id_user: number;
+  name: string;
+  lastname: string;
+  cajaAhorro?: {
+    estado: number; // 1 activo, 0 inactivo
+    fecha_desactivacion: string | null;
+  } | null;
 }
 
-export default function CajasAhorroCopropietarios() {
+interface PageProps extends Record<string, unknown> {
+  usuarios: Usuario[];
+  errors?: string | null;
+  success?: string | null;
+}
+
+const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, success }) => {
   const [busqueda, setBusqueda] = useState("");
-  const [copropietarios, setCopropietarios] = useState<Copropietario[]>([
-    { id: 1, nombre: "Ana", apellido: "Torres", activo: true },
-    { id: 2, nombre: "Luis", apellido: "Pérez", activo: false, tiempoInactividad: "2 meses" },
-    { id: 3, nombre: "María", apellido: "López", activo: true },
-    { id: 4, nombre: "Carlos", apellido: "Gómez", activo: false, tiempoInactividad: "15 días" },
-  ]);
 
-  const toggleEstado = (id: number) => {
-    setCopropietarios(prev =>
-      prev.map(copro =>
-        copro.id === id
-          ? {
-              ...copro,
-              activo: !copro.activo,
-              tiempoInactividad: !copro.activo ? undefined : "1 día", // Simulación
-            }
-          : copro
-      )
-    );
-  };
+  const usuariosFiltrados = usuarios.filter((usuario) => {
+    const nombreCompleto = `${usuario.name} ${usuario.lastname}`.toLowerCase();
+    return nombreCompleto.includes(busqueda.toLowerCase());
+  });
 
-  // Filtro + ordenamiento ascendente
-  const copropietariosFiltrados = copropietarios
-    .filter(c => {
-      const termino = busqueda.toLowerCase();
-      return (
-        c.nombre.toLowerCase().includes(termino) ||
-        c.apellido.toLowerCase().includes(termino)
-      );
-    })
-    .sort((a, b) => {
-      const nombreCompletoA = `${a.apellido} ${a.nombre}`.toLowerCase();
-      const nombreCompletoB = `${b.apellido} ${b.nombre}`.toLowerCase();
-      return nombreCompletoA.localeCompare(nombreCompletoB);
-    });
+  function crearCaja(usuario_id: number) {
+    router.post("/cajas-ahorro/crear", { usuario_id });
+  }
+
+  function activarCaja(usuario_id: number) {
+    router.post(`/cajas-ahorro/activar/${usuario_id}`);
+  }
+
+  function desactivarCaja(usuario_id: number) {
+    router.post(`/cajas-ahorro/desactivar/${usuario_id}`);
+  }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col md:flex-row min-h-screen bg-white">
       <Head title="Cajas de Ahorro Copropietarios" />
 
-      <div className="md:flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
-          <div>
-            <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-center mb-8">Admin Edificio La Paz</h1>
-            <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
-              <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
-              <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietario</a>
-              <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">🏪 Administrador Micromarket</a>
-            </nav>
-          </div>
-        </aside>
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
+        <div>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/107/107831.png"
+            alt="Logo"
+            className="w-16 h-16 mx-auto mb-4"
+          />
+          <h1 className="text-2xl font-bold text-center mb-8">Admin Edificio La Paz</h1>
+          <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
+            <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">
+              🤝 Gestión de Copropietarios
+            </a>
+            <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">
+              🏪 Administrador Micromarket
+            </a>
+            <a href="/logout" className="hover:text-[#10B981] text-xl">
+              🚪 Cerrar Sesión
+            </a>
+          </nav>
+        </div>
+      </aside>
 
-        {/* Main */}
-        <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto overflow-x-auto bg-[#1E3A8A] border-2 border-[#10B981] text-white rounded-tl-2xl">
-          <h2 className="text-2xl font-bold text-center mb-4">Cajas de Ahorro de Copropietarios</h2>
+      {/* Contenido principal */}
+      <main className="flex-1 p-6 md:p-12 bg-[#1E3A8A] border-4 border-[#10B981] text-white rounded-tl-3xl w-full max-w-7xl mx-auto">
+        <h2 className="text-2xl font-bold text-center mb-6 mt-0">📊 Cajas de Ahorro Copropietarios</h2>
 
-          <div className="mb-4 text-center">
-            <input type="text" placeholder="Buscar por nombre o apellido" className="bg-white px-4 py-2 rounded-md border border-gray-300 w-full max-w-md text-black" value={busqueda} onChange={e => setBusqueda(e.target.value)}/>
-          </div>
+        {/* Mensajes flash */}
+        {errors && (
+          <div className="bg-red-200 text-red-800 p-3 mb-4 rounded shadow">{errors}</div>
+        )}
+        {success && (
+          <div className="bg-green-200 text-green-800 p-3 mb-4 rounded shadow">{success}</div>
+        )}
 
-          <div className="bg-white text-blue-900 rounded-xl shadow-md overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-left">
-              <thead className="bg-gray-100 text-blue-800">
-                <tr>
-                  <th className="px-6 py-3 text-sm font-semibold">Nombre</th>
-                  <th className="px-6 py-3 text-sm font-semibold">Apellido</th>
-                  <th className="px-6 py-3 text-sm font-semibold">Estado de Caja</th>
-                  <th className="px-6 py-3 text-sm font-semibold">Tiempo de Inactividad</th>
-                  <th className="px-6 py-3 text-sm font-semibold">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {copropietariosFiltrados.map(copro => (
-                  <tr key={copro.id}>
-                    <td className="px-6 py-4">{copro.nombre}</td>
-                    <td className="px-6 py-4">{copro.apellido}</td>
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="🔍 Buscar copropietario..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full max-w-md px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+          />
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white text-sm text-left rounded-xl overflow-hidden">
+            <thead className="bg-gray-200 text-gray-700 uppercase">
+              <tr>
+                <th className="px-6 py-3">Nombre</th>
+                <th className="px-6 py-3">Apellido</th>
+                <th className="px-6 py-3">Estado de Caja</th>
+                <th className="px-6 py-3">Fecha Desactivación</th>
+                <th className="px-6 py-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuariosFiltrados.map((usuario) => {
+                const caja = usuario.cajaAhorro;
+
+                return (
+                  <tr key={usuario.id_user} className="border-t hover:bg-gray-100 text-gray-800">
+                    <td className="px-6 py-4">{usuario.name}</td>
+                    <td className="px-6 py-4">{usuario.lastname}</td>
                     <td className="px-6 py-4">
-                      {copro.activo ? (
-                        <span className="text-green-600 font-semibold">Activo</span>
+                      {caja ? (
+                        caja.estado === 1 ? (
+                          <span className="text-green-600 font-semibold">Activo</span>
+                        ) : (
+                          <span className="text-red-600 font-semibold">Inactivo</span>
+                        )
                       ) : (
-                        <span className="text-red-600 font-semibold">Inactivo</span>
+                        <span className="text-gray-500">Sin caja</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      {copro.activo ? "—" : <span className="text-gray-700">{copro.tiempoInactividad}</span>}
+                      {caja && caja.estado === 0 && caja.fecha_desactivacion
+                        ? new Date(caja.fecha_desactivacion.replace(" ", "T")).toLocaleDateString()
+                        : "—"}
                     </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => toggleEstado(copro.id)}
-                        className={`px-4 py-2 rounded text-white font-semibold shadow-md ${
-                          copro.activo
-                            ? "bg-red-500 hover:bg-red-600"
-                            : "bg-green-500 hover:bg-green-600"
-                        }`}
-                      >
-                        {copro.activo ? "Desactivar" : "Activar"}
-                      </button>
+                    <td className="px-6 py-4 space-x-2">
+                      {!caja && (
+                        <button
+                          onClick={() => crearCaja(usuario.id_user)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
+                        >
+                          Crear Caja
+                        </button>
+                      )}
+                      {caja && caja.estado === 1 && (
+                        <button
+                          onClick={() => desactivarCaja(usuario.id_user)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
+                        >
+                          Desactivar Caja
+                        </button>
+                      )}
+                      {caja && caja.estado === 0 && (
+                        <button
+                          onClick={() => activarCaja(usuario.id_user)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md text-sm"
+                        >
+                          Reactivar Caja
+                        </button>
+                      )}
                     </td>
                   </tr>
-                ))}
-                {copropietariosFiltrados.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="text-center py-6 text-gray-500">
-                      No se encontraron copropietarios.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </main>
-      </div>
+                );
+              })}
+              {usuariosFiltrados.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center px-6 py-4 text-gray-500">
+                    No se encontraron copropietarios.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
   );
-}
+};
+
+export default CajasAhorroCopropietarios;
