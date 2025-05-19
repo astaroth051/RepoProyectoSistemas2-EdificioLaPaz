@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CompraRealizada;
 
 class VentaController extends Controller
 {
@@ -145,6 +147,18 @@ class VentaController extends Controller
             }
 
             DB::commit();
+
+            $user = Auth::user();
+
+            Mail::to($user->email)->send(new CompraRealizada([
+                'codigo_ficha' => $request->codigo_ficha,
+                'fecha' => $request->fecha,
+                'total' => $request->total,
+                'productos' => $request->productos
+            ]));
+
+
+
 
             return response()->json(['message' => 'Compra y plan de pagos registrados con éxito.'], 201);
         } catch (\Exception $e) {
