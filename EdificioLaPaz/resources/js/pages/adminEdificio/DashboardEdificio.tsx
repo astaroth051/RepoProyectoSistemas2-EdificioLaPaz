@@ -77,7 +77,7 @@ export default function DashboardEdificio({ adminEdificio }: Props) {
           <h3 className="text-xl font-semibold mb-4">🏢 Resumen del Edificio</h3>
           <ul className="space-y-2 text-base">
             <li><strong>Nombre:</strong> Edificio La Paz</li>
-            <li><strong>Ubicación:</strong> Av. Costanera #123, La Paz</li>
+            <li><strong>Ubicación:</strong> Av. 20 de Octubre #2151, La Paz</li>
             <li><strong>Número de departamentos:</strong> 48</li>
             <li><strong>Áreas comunes:</strong> Terraza, sala de reuniones</li>
           </ul>
