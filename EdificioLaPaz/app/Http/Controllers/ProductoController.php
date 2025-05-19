@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Log;
@@ -30,8 +30,22 @@ class ProductoController extends Controller
     }
 
     // Mostrar vista Inertia
-    public function mostrarProductos()
+    public function mostrarProductos(Request $request)
     {
-        return inertia('client/Productos');
+        return Inertia::render('client/Productos', [
+            'carrito' => $request->input('carrito'),
+            'total' => $request->input('total'),
+            'codigo_ficha' => $request->input('codigo_ficha'),
+            'fecha' => $request->input('fecha'),
+        ]);
+    }
+
+    public function mostrarPlanDePagos(Request $request)
+    {
+        return inertia('client/PlanDePagos', [
+            'carrito' => $request->input('carrito', []),
+            'total' => $request->input('total', 0),
+            'codigo_ficha' => $request->input('codigo_ficha', '')
+        ]);
     }
 }

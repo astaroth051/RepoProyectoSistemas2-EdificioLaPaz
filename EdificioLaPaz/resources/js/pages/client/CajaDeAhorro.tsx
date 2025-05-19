@@ -100,7 +100,7 @@ const CajaDeAhorro: React.FC = () => {
           <h1 className="text-2xl font-bold text-center mb-8">Bienvenido</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold items-center md:items-start">
             <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
-            <a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>
+            {/*<a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>*/}
             <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
           </nav>
         </div>

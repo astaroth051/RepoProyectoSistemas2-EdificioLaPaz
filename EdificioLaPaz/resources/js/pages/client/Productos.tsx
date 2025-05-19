@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Head } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
 interface Producto {
     id_productos: number;
@@ -17,13 +19,58 @@ interface ItemCarrito {
     cantidad: number;
 }
 
+
+
 export default function Productos() {
+    // 📦 Obtener props desde Inertia
+    const { carrito: carritoProp, total: totalProp, codigo_ficha, fecha } = usePage().props as {
+        carrito?: ItemCarrito[];
+        total?: number;
+        codigo_ficha?: string;
+        fecha?: string;
+    };
+
+    // 📦 Carrito inicial desde localStorage (por si recarga la página)
+    const carritoLocalStorage: ItemCarrito[] = (() => {
+        try {
+            const stored = localStorage.getItem("carrito");
+            const parsed = stored ? JSON.parse(stored) : [];
+            if (Array.isArray(parsed)) {
+                return parsed.filter(
+                    (item) =>
+                        item &&
+                        typeof item.cantidad === "number" &&
+                        item.producto &&
+                        typeof item.producto.precio === "number"
+                );
+            }
+        } catch (e) {
+            console.warn("Error al parsear el carrito desde localStorage", e);
+        }
+        return [];
+    })();
+
+    // 🛒 Usar primero el carrito recibido desde PlanDePagos (si existe), si no, el del localStorage
+    const [carrito, setCarrito] = useState<ItemCarrito[]>(() => {
+        if (carritoProp && Array.isArray(carritoProp)) {
+            return carritoProp.map((item) => ({
+                producto: item.producto,
+                cantidad: Number(item.cantidad)
+            }));
+        }
+        return carritoLocalStorage;
+    });
+
+    // Otros estados
     const [busqueda, setBusqueda] = useState("");
     const [productos, setProductos] = useState<Producto[]>([]);
-    const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
-    const [codigoFicha, setCodigoFicha] = useState(`FICHA-${Math.floor(Math.random() * 10000)}`);
+
+    // 🧾 Código de ficha (si se trajo desde PlanDePagos lo usamos, si no, generamos uno)
+    const [codigoFicha, setCodigoFicha] = useState(() =>
+        codigo_ficha || localStorage.getItem("codigoFicha") || `FICHA-${Math.floor(Math.random() * 10000)}`
+    );
 
     const obtenerProductos = async (terminoBusqueda: string = "") => {
         try {
@@ -48,10 +95,41 @@ export default function Productos() {
             setCargando(false);
         }
     };
+    useEffect(() => {
+        localStorage.removeItem("codigoFicha");
+        localStorage.removeItem("totalCompra");
+    }, []);
 
     useEffect(() => {
         obtenerProductos(busqueda);
     }, [busqueda]);
+
+    // Normalizar carrito cuando llegan los productos desde el backend
+    useEffect(() => {
+        const normalizarCarrito = () => {
+            if (!productos.length || !carrito.length) return;
+
+            const nuevosItems: ItemCarrito[] = [];
+
+            carrito.forEach((item) => {
+                if (!item.producto.id_productos) {
+                    const prodReal = productos.find(p => p.nombre === item.producto.nombre);
+                    if (prodReal) {
+                        nuevosItems.push({
+                            producto: prodReal,
+                            cantidad: item.cantidad
+                        });
+                    }
+                } else {
+                    nuevosItems.push(item);
+                }
+            });
+
+            setCarrito(nuevosItems);
+        };
+
+        normalizarCarrito();
+    }, [productos]);
 
     const buscarProducto = () => {
         obtenerProductos(busqueda);
@@ -61,7 +139,7 @@ export default function Productos() {
         setCarrito(prevCarrito => {
             // Buscar si el producto ya está en el carrito
             const productoExistenteIndex = prevCarrito.findIndex(
-                item => item.producto.id_productos === producto.id_productos
+                item => Number(item.producto.id_productos) === Number(producto.id_productos)
             );
 
             if (productoExistenteIndex >= 0) {
@@ -95,7 +173,7 @@ export default function Productos() {
     };
 
     const eliminarDelCarrito = (id: number) => {
-        setCarrito(carrito.filter(item => item.producto.id_productos !== id));
+        setCarrito(prev => prev.filter(item => Number(item.producto.id_productos) !== Number(id)));
     };
 
     const actualizarCantidad = (productoId: number, nuevaCantidad: number) => {
@@ -121,41 +199,42 @@ export default function Productos() {
         );
     };
 
-    const totalCompra = carrito.reduce((total, item) =>
-        total + (item.producto.precio * item.cantidad), 0);
+    const totalCompra = carrito.reduce((total, item) => {
+        if (!item.producto || typeof item.producto.precio !== 'number') return total;
+        return total + (item.producto.precio * item.cantidad);
+    }, 0);
 
-    const finalizarCompra = async () => {
-        try {
-            if (carrito.length === 0) {
-                alert("No hay productos en el carrito");
-                return;
-            }
-
-            const compra = {
-                codigo_ficha: codigoFicha,
-                productos: carrito.map(item => ({
-                    producto_id: item.producto.id_productos,
-                    cantidad: item.cantidad,
-                    precio_unitario: item.producto.precio,
-                    subtotal: item.producto.precio * item.cantidad
-                })),
-                total: totalCompra,
-                fecha: new Date().toISOString()
-            };
-
-            const response = await axios.post('/api/compras', compra);
-
-            if (response.status === 201) {
-                alert("Compra realizada con éxito!");
-                setCarrito([]);
-                setCodigoFicha(`FICHA-${Math.floor(Math.random() * 10000)}`);
-                // Opcional: Volver a cargar productos para actualizar stock si el backend no lo hace via push
-                // obtenerProductos(busqueda);
-            }
-        } catch (error) {
-            console.error("Error al finalizar compra", error);
-            alert("Ocurrió un error al procesar la compra");
+    const finalizarCompra = () => {
+        if (carrito.length === 0) {
+            alert("No hay productos en el carrito");
+            return;
         }
+
+        const compra = {
+            codigo_ficha: codigoFicha,
+            productos: carrito.map(item => ({
+                producto_id: item.producto.id_productos,
+                nombre: item.producto.nombre,
+                cantidad: item.cantidad,
+                precio_unitario: item.producto.precio,
+                subtotal: item.producto.precio * item.cantidad
+            })),
+            total: totalCompra,
+            fecha: new Date().toISOString()
+        };
+
+        router.post('/plan-de-pagos', {
+            codigo_ficha: codigoFicha,
+            productos: carrito.map(item => ({
+                producto_id: item.producto.id_productos,
+                nombre: item.producto.nombre,
+                cantidad: item.cantidad,
+                precio_unitario: item.producto.precio,
+                subtotal: item.producto.precio * item.cantidad
+            })),
+            total: totalCompra,
+            fecha: new Date().toISOString(),
+        });
     };
 
     return (
@@ -170,9 +249,7 @@ export default function Productos() {
                     <nav className="flex flex-col gap-4 text-sm font-semibold">
                         <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
                         <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
-                        <a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>
-                        <a href="/productos" className="text-[#10B981] text-xl font-bold">🛒 Productos</a>
-                        <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
+                        {/*<a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>*/}
                     </nav>
                 </div>
             </aside>
@@ -220,16 +297,24 @@ export default function Productos() {
                             </div>
 
                             {/* Items del carrito */}
-                            {carrito.map((item) => {
-                                const productoEnStock = productos.find(p => p.id_productos === item.producto.id_productos);
-                                const stockDisponible = productoEnStock ? productoEnStock.stock : item.producto.stock; // Usa el stock del producto en la lista, o el del item como fallback
+                            {carrito.map((item, index) => {
+                                const producto = item.producto;
+                                const idProducto = producto?.id_productos;
+
+                                if (!producto || typeof idProducto !== "number") {
+                                    //console.warn("Item de carrito inválido:", item);
+                                    return null; // No renderizar si el producto no está bien estructurado
+                                }
+
+                                const productoEnStock = productos.find(p => p.id_productos === idProducto);
+                                const stockDisponible = productoEnStock ? productoEnStock.stock : producto.stock;
 
                                 return (
-                                    <div key={item.producto.id_productos} className="grid grid-cols-5 gap-4 mt-2 text-center items-center">
-                                        <div className="bg-gray-100 p-2 rounded text-blue-800">{item.producto.nombre}</div>
+                                    <div key={`carrito-${idProducto}-${index}`} className="grid grid-cols-5 gap-4 mt-2 text-center items-center">
+                                        <div className="bg-gray-100 p-2 rounded text-blue-800">{producto.nombre}</div>
                                         <div className="bg-gray-100 p-2 rounded text-blue-800 flex justify-center items-center gap-2">
                                             <button
-                                                onClick={() => actualizarCantidad(item.producto.id_productos, item.cantidad - 1)}
+                                                onClick={() => actualizarCantidad(idProducto, item.cantidad - 1)}
                                                 className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
                                                 disabled={item.cantidad <= 1}
                                             >
@@ -237,7 +322,7 @@ export default function Productos() {
                                             </button>
                                             <span>{item.cantidad}</span>
                                             <button
-                                                onClick={() => actualizarCantidad(item.producto.id_productos, item.cantidad + 1)}
+                                                onClick={() => actualizarCantidad(idProducto, item.cantidad + 1)}
                                                 className="px-2 py-1 bg-blue-300 rounded disabled:opacity-50"
                                                 disabled={item.cantidad >= stockDisponible}
                                             >
@@ -245,14 +330,14 @@ export default function Productos() {
                                             </button>
                                         </div>
                                         <div className="bg-gray-100 p-2 rounded text-blue-800">
-                                            {item.producto.precio.toFixed(2)} Bs
+                                            {Number(producto.precio).toFixed(2)} Bs
                                         </div>
                                         <div className="bg-gray-100 p-2 rounded text-blue-800">
-                                            {(item.producto.precio * item.cantidad).toFixed(2)} Bs
+                                            {(Number(producto.precio) * Number(item.cantidad)).toFixed(2)} Bs
                                         </div>
                                         <div className="bg-gray-100 p-2 rounded">
                                             <button
-                                                onClick={() => eliminarDelCarrito(item.producto.id_productos)}
+                                                onClick={() => eliminarDelCarrito(idProducto)}
                                                 className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                                             >
                                                 Eliminar
@@ -262,13 +347,14 @@ export default function Productos() {
                                 );
                             })}
 
+
                             {/* Total y acciones */}
                             <div className="mt-6 flex justify-between items-center border-t pt-4">
                                 <div className="text-lg font-bold">
                                     Código Ficha: <span className="text-blue-700">{codigoFicha}</span>
                                 </div>
                                 <div className="text-xl font-bold text-blue-800">
-                                    Total: {totalCompra.toFixed(2)} Bs
+                                    Total: {(Number(totalCompra)).toFixed(2)} Bs
                                 </div>
                             </div>
 
@@ -323,8 +409,7 @@ export default function Productos() {
                                 <div className="space-y-2 text-blue-900">
                                     <p className="font-bold">{prod.nombre}</p>
                                     <p><strong>Categoría:</strong> {prod.categoria || 'General'}</p>
-                                    <p><strong>Estado:</strong> {prod.estado}</p>
-                                    <p><strong>Precio:</strong> {prod.precio.toFixed(2)} Bs</p>
+                                    <p><strong>Precio:</strong> {(Number(prod.precio)).toFixed(2)} Bs</p>
                                     <p>
                                         <strong>Disponibles:</strong>
                                         <span className={prod.stock > 0 ? 'text-green-600' : 'text-red-600'}>
@@ -353,4 +438,6 @@ export default function Productos() {
             </main>
         </div>
     );
+
+
 }
