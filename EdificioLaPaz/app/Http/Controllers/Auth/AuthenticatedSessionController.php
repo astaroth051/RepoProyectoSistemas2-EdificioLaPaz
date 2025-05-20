@@ -40,8 +40,9 @@ class AuthenticatedSessionController extends Controller
             case 'copropietario':
                 return redirect()->intended(route('dashboard-client', absolute: false));
             case 'administrador':
+                return redirect()->intended(route('dashboard-micromarket', absolute: false));
             case 'dueño':
-                return redirect()->intended('/dashboard');
+                return redirect()->intended(route('dashboard-edificio', absolute: false));
             default:
                 Auth::logout();
                 return redirect('/login')->withErrors(['email' => 'Rol no autorizado.']);

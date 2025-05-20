@@ -8,7 +8,7 @@ interface Copropietario {
   rol: string;
 }
 
-export default function GestionAdminMicromarket({ copropietarios: iniciales }: { copropietarios: Copropietario[] }) {
+export default function GestionAdminMicromarket({ copropietarios: iniciales = [] }: { copropietarios?: Copropietario[] }) {
   const [busqueda, setBusqueda] = useState("");
   const [copropietarios, setCopropietarios] = useState(iniciales);
 

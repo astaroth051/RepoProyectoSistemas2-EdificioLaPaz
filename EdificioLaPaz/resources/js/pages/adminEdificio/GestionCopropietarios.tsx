@@ -11,10 +11,10 @@ interface Copropietario {
 }
 
 interface PageProps {
-  copropietarios: Copropietario[];
+  copropietarios?: Copropietario[]; // <-- ahora es opcional
 }
 
-export default function GestionCopropietarios({ copropietarios }: PageProps) {
+export default function GestionCopropietarios({ copropietarios = [] }: PageProps) {
   const [busqueda, setBusqueda] = useState("");
 
   const copropietariosFiltrados = copropietarios
@@ -79,7 +79,7 @@ export default function GestionCopropietarios({ copropietarios }: PageProps) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {copropietariosFiltrados.map((copro, index) => (
-                <tr key={copro.id || index}> {/* Uso del índice como fallback */}
+                <tr key={copro.id || index}>
                   <td className="px-4 py-3 whitespace-nowrap">{copro.nombre}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{copro.apellido}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{copro.correo}</td>

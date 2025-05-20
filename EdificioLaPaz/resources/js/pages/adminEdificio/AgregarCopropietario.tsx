@@ -61,8 +61,8 @@ export default function AgregarCopropietario() {
               <label className="block font-semibold mb-1">Rol</label>
               <select
                 name="rol" value={formData.rol} onChange={handleChange} className="w-full px-4 py-2 rounded border border-gray-300">
-                <option value="administrador">Administrador</option>
-                <option value="administrador micromarket">Administrador Micromarket</option>
+                <option value="dueño">Dueño</option>
+                <option value="administrador">Administrador Micromarket</option>
                 <option value="copropietario">Copropietario</option>
               </select>
             </div>

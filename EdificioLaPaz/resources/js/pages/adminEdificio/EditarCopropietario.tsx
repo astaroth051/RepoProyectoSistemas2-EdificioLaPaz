@@ -37,7 +37,7 @@ export default function EditarCopropietario({ copropietario }: Props) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -62,28 +62,33 @@ export default function EditarCopropietario({ copropietario }: Props) {
         <form onSubmit={handleSubmit} className="bg-white text-blue-900 rounded-xl p-6 shadow-md space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block font-semibold mb-1">Nombre</label>
+              <label className="block font-semibold mb-1" htmlFor="nombre">Nombre</label>
               <input
+                id="nombre"
                 type="text"
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
+                required
               />
             </div>
             <div>
-              <label className="block font-semibold mb-1">Apellido</label>
+              <label className="block font-semibold mb-1" htmlFor="apellido">Apellido</label>
               <input
+                id="apellido"
                 type="text"
                 name="apellido"
                 value={formData.apellido}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
+                required
               />
             </div>
             <div>
-              <label className="block font-semibold mb-1">Teléfono</label>
+              <label className="block font-semibold mb-1" htmlFor="telefono">Teléfono</label>
               <input
+                id="telefono"
                 type="text"
                 name="telefono"
                 value={formData.telefono}
@@ -92,22 +97,26 @@ export default function EditarCopropietario({ copropietario }: Props) {
               />
             </div>
             <div>
-              <label className="block font-semibold mb-1">Email</label>
+              <label className="block font-semibold mb-1" htmlFor="email">Email</label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
+                required
               />
             </div>
             <div>
-              <label className="block font-semibold mb-1">Rol</label>
+              <label className="block font-semibold mb-1" htmlFor="rol">Rol</label>
               <select
+                id="rol"
                 name="rol"
                 value={formData.rol}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded border border-gray-300"
+                required
               >
                 <option value="">Seleccionar Rol</option>
                 <option value="copropietario">Copropietario</option>

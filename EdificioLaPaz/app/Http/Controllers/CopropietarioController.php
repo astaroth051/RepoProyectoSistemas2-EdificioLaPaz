@@ -30,7 +30,7 @@ class CopropietarioController extends Controller
     public function indexAdminMicromarket()
     {
         $copropietarios = User::select('id_user as id', 'name as nombre', 'lastname as apellido', 'rol')
-            ->whereIn('rol', ['copropietario', 'administrador micromarket'])
+            ->whereIn('rol', ['copropietario', 'administrador'])
             ->get();
 
         return Inertia::render('adminEdificio/AdministradorMicromarket', [
@@ -96,7 +96,7 @@ class CopropietarioController extends Controller
             'telefono' => 'required|string|max:8',
             'email' => 'required|email|max:100|unique:users,email',
             'password' => 'required|string|min:6',
-            'rol' => 'required|string|in:copropietario,administrador,administrador micromarket',
+            'rol' => 'required|string|in:copropietario,dueño,administrador',
         ]);
 
         $copropietario = new User();
@@ -115,7 +115,7 @@ class CopropietarioController extends Controller
         $user = User::findOrFail($id);
 
         if ($user->rol === 'copropietario') {
-            $user->rol = 'administrador micromarket';
+            $user->rol = 'administrador';
         } else {
             $user->rol = 'copropietario';
         }
