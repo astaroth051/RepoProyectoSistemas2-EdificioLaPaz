@@ -19,21 +19,15 @@ Route::get('/', function () {
 //    })->name('dashboard');
 //});
 
-Route::middleware(['auth', 'verified', 'checkRole:administrador,dueño'])->group(function () {
+/*Route::middleware(['auth', 'verified', 'checkRole:administrador,dueño'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
-});
+});*/
 
 Route::get('/register-user', function () {
     return Inertia::render('auth/register-user');
 })->name('register-user');
-
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-require __DIR__.'/client.php';
-require __DIR__.'/adminedificio.php';
-require __DIR__.'/adminmicromarket.php';
 
 Route::get('/logout-temp', function () {
     Auth::logout();
@@ -57,3 +51,10 @@ Route::get('/plan-de-pagos', [ProductoController::class, 'mostrarPlanDePagos']);
 
 
 Route::middleware(['auth'])->post('/api/guardar-compra', [VentaController::class, 'guardarVentaConPlan']);
+
+
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/client.php';
+require __DIR__.'/adminedificio.php';
+require __DIR__.'/adminmicromarket.php';
