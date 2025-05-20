@@ -63,80 +63,40 @@ export default function EditarCopropietario({ copropietario }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block font-semibold mb-1" htmlFor="nombre">Nombre</label>
-              <input
-                id="nombre"
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded border border-gray-300"
-                required
-              />
+              <input id="nombre" type="text"name="nombre" value={formData.nombre} onChange={handleChange} className="w-full px-4 py-2 rounded border border-gray-300"
+                required/>
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="apellido">Apellido</label>
-              <input
-                id="apellido"
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded border border-gray-300"
-                required
-              />
+              <input id="apellido" type="text" name="apellido" value={formData.apellido} onChange={handleChange} className="w-full px-4 py-2 rounded border border-gray-300"
+                required/>
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="telefono">Teléfono</label>
-              <input
-                id="telefono"
-                type="text"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded border border-gray-300"
-              />
+              <input id="telefono" type="text" name="telefono" value={formData.telefono} onChange={handleChange}className="w-full px-4 py-2 rounded border border-gray-300"/>
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded border border-gray-300"
-                required
-              />
+              <input id="email" type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 rounded border border-gray-300"
+                required/>
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="rol">Rol</label>
-              <select
-                id="rol"
-                name="rol"
-                value={formData.rol}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded border border-gray-300"
-                required
-              >
+              <select id="rol" name="rol" value={formData.rol} onChange={handleChange} className="w-full px-4 py-2 rounded border border-gray-300"
+                required>
                 <option value="">Seleccionar Rol</option>
                 <option value="copropietario">Copropietario</option>
-                <option value="admin">Administrador</option>
-                <option value="administrador micromarket">Administrador Micromarket</option>
+                <option value="dueño">Dueño</option>
+                <option value="administrador">Administrador</option>
               </select>
             </div>
           </div>
 
           <div className="flex justify-between mt-6">
-            <Link
-              href="/gestion-copropietarios"
-              className="bg-gray-300 text-blue-900 px-4 py-2 rounded hover:bg-gray-400"
-            >
+            <Link href="/gestion-copropietarios" className="bg-gray-300 text-blue-900 px-4 py-2 rounded hover:bg-gray-400">
               Cancelar
             </Link>
-            <button
-              type="submit"
-              className="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600"
-            >
+            <button type="submit" className="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600">
               Guardar Cambios
             </button>
           </div>

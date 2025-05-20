@@ -87,7 +87,7 @@ export default function GestionAdminMicromarket({ copropietarios: iniciales = []
                     <td className="px-6 py-4">{copro.nombre}</td>
                     <td className="px-6 py-4">{copro.apellido}</td>
                     <td className="px-6 py-4">
-                      {copro.rol === 'administrador micromarket' ? (
+                      {copro.rol === 'administrador' ? (
                         <span className="text-green-600 font-semibold">Activo</span>
                       ) : (
                         <span className="text-red-600 font-semibold">Inactivo</span>
@@ -97,12 +97,12 @@ export default function GestionAdminMicromarket({ copropietarios: iniciales = []
                       <button
                         onClick={() => toggleEstado(copro.id)}
                         className={`px-4 py-2 rounded text-white font-semibold shadow-md ${
-                          copro.rol === 'administrador micromarket'
+                          copro.rol === 'administrador'
                             ? "bg-red-500 hover:bg-red-600"
                             : "bg-green-500 hover:bg-green-600"
                         }`}
                       >
-                        {copro.rol === 'administrador micromarket' ? "Desactivar" : "Activar"}
+                        {copro.rol === 'administrador' ? "Desactivar" : "Activar"}
                       </button>
                     </td>
                   </tr>

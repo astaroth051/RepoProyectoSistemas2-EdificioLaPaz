@@ -14,14 +14,12 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
     })->name('dashboard-edificio');
 
     // Gestión de copropietarios
-    Route::get('/gestion-copropietarios', function () {
-        return Inertia::render('adminEdificio/GestionCopropietarios');
-    })->name('gestion-copropietarios');
+    Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
+        ->name('gestion-copropietarios');
 
-    // Panel del administrador micromarket
-    Route::get('/administrador-micromarket', function () {
-        return Inertia::render('adminEdificio/AdministradorMicromarket');
-    })->name('administrador-micromarket');
+    //Administrador micromarket
+    Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
+        ->name('administrador-micromarket');
 
     // Formulario para agregar copropietario
     Route::get('/agregar-copropietario', function () {
