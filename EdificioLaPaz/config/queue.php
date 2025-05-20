@@ -12,8 +12,8 @@ return [
     | syntax for each. The default queue connection is defined below.
     |
     */
-
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    /*database envés de sync*/
+    'default' => env('QUEUE_CONNECTION', 'sync'),
 
     /*
     |--------------------------------------------------------------------------

@@ -35,15 +35,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if ($user->rol === 'administrador') {
-            return redirect()->route('dashboard-edificio');
-        } elseif ($user->rol === 'copropietario') {
-            return redirect()->route('dashboard-client');
-        } elseif ($user->rol === 'administrador micromarket') {
-            return redirect()->route('dashboard-micromarket');
-        } else {
-            // Redirección por defecto si el rol no coincide con ninguno de los anteriores
-            return redirect()->intended(route('dashboard'));
+        // Redirigir según el rol
+        switch ($user->rol) {
+            case 'copropietario':
+                return redirect()->intended(route('dashboard-client', absolute: false));
+            case 'administrador':
+            case 'dueño':
+                return redirect()->intended('/dashboard');
+            default:
+                Auth::logout();
+                return redirect('/login')->withErrors(['email' => 'Rol no autorizado.']);
         }
     }
 
