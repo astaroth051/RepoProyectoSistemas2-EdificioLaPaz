@@ -2,39 +2,126 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\Producto;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
-    //
-        public function index(Request $request)
-{
-    $query = Producto::query();
-    
-    if ($request->has('search')) {
-        $query->where('nombre', 'like', '%'.$request->search.'%')
-              ->orWhere('descripcion', 'like', '%'.$request->search.'%');
-    }
-    
-    if ($request->has('categoria') && $request->categoria !== 'todas') {
-        $query->where('categoria', $request->categoria);
-    }
-    
-    if ($request->has('stock')) {
-        if ($request->stock === 'disponible') {
-            $query->where('stock', '>', 0);
-        } elseif ($request->stock === 'agotado') {
-            $query->where('stock', '<=', 0);
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $busqueda = $request->input('busqueda', '');
+        $filtroStock = $request->input('filtroStock', 'todos');
+        
+        $query = Producto::query();
+        
+        // Aplicar filtro de búsqueda
+        if (!empty($busqueda)) {
+            $query->where('nombre', 'like', "%{$busqueda}%");
         }
+        
+        // Aplicar filtro de stock
+        switch ($filtroStock) {
+            case 'conStock':
+                $query->where('stock', '>', 0);
+                break;
+            case 'sinStock':
+                $query->where('stock', '<=', 0);
+                break;
+            // 'todos' no necesita condición adicional
+        }
+        
+        $productos = $query->get();
+        
+        return Inertia::render('adminMicromarket/ProductosMicromarket', [
+            'productos' => $productos,
+            'filtros' => [
+                'busqueda' => $busqueda,
+                'filtroStock' => $filtroStock
+            ]
+        ]);
     }
-    
-    $productos = $query->orderBy('nombre')->get();
-    
-    return Inertia::render('Productos/Index', [
-        'productos' => $productos,
-        'categorias' => Producto::select('categoria')->distinct()->pluck('categoria'),
-        'filters' => $request->only(['search', 'categoria', 'stock'])
-    ]);
-}
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('adminMicromarket/AgregarProductos');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'categoria' => 'required|string|max:100',
+            'imagen' => 'required|url|max:255',
+        ]);
+
+        $producto = Producto::create($validated);
+        
+        return redirect()->route('productos-micromarket')
+                         ->with('success', 'Producto creado exitosamente');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Producto $producto)
+    {
+        return Inertia::render('adminMicromarket/VerProducto', [
+            'producto' => $producto
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Producto $producto)
+    {
+        return Inertia::render('adminMicromarket/EditarProductos', [
+            'producto' => $producto
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Producto $producto)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'categoria' => 'required|string|max:100',
+            'imagen' => 'required|url|max:255',
+        ]);
+
+        $producto->update($validated);
+        
+        return redirect()->route('productos-micromarket')
+                         ->with('success', 'Producto actualizado exitosamente');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Producto $producto)
+    {
+        $producto->delete(); // Eliminación lógica
+        
+        return redirect()->route('productos-micromarket')
+                         ->with('success', 'Producto eliminado exitosamente');
+    }
 }

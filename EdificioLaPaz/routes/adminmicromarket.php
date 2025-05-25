@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,6 +38,8 @@ Route::get('/productos-micromarket', function () {
 Route::get('/agregar-productos', function () {
     return Inertia::render('adminMicromarket/AgregarProductos');
 })->name('agregar-productos');
+Route::post('/agregar-productos', [ProductoController::class, 'store'])
+     ->name('agregar-productos.store');
 
 //editar productos micromarket
 //ruta protegida
@@ -62,3 +64,29 @@ Route::get('/editar-productos', function () {
 Route::get('/recarga-saldo', function () {
     return Inertia::render('adminMicromarket/RecargaSaldo');
 })->name('recarga-saldo');
+Route::get('/productos', [ProductoController::class, 'index'])
+     ->name('productos-micromarket');
+
+// Mostrar formulario de creación (CREATE - Form)
+Route::get('/productos/crear', [ProductoController::class, 'create'])
+     ->name('productos.create');
+
+// Guardar nuevo producto (CREATE - Process)
+Route::post('/productos', [ProductoController::class, 'store'])
+     ->name('productos.store');
+
+// Mostrar detalles de un producto (READ single)
+Route::get('/productos/{producto}', [ProductoController::class, 'show'])
+     ->name('productos.show');
+
+// Mostrar formulario de edición (UPDATE - Form)
+Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])
+     ->name('productos.edit');
+
+// Actualizar producto (UPDATE - Process)
+Route::put('/productos/{producto}', [ProductoController::class, 'update'])
+     ->name('productos.update');
+
+// Eliminar producto (DELETE)
+Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])
+     ->name('productos.destroy');

@@ -1,25 +1,18 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model
 {
-    use HasFactory;
+    use  SoftDeletes;
 
-    // Especificamos el nombre exacto de la tabla
     protected $table = 'productos';
-    
-    // Definimos la clave primaria personalizada
     protected $primaryKey = 'id_productos';
-    
-    // Indicamos que es autoincremental
-    public $incrementing = true;
-    
-    // Campos que se pueden asignar masivamente
+    public $timestamps = false; 
     protected $fillable = [
+        'id_productos',
         'nombre',
         'descripcion',
         'precio',
@@ -29,17 +22,12 @@ class Producto extends Model
         'estado',
         'fecha_restock'
     ];
-    
-    // Conversiones de tipos
+
     protected $casts = [
         'precio' => 'decimal:2',
-        'fecha_restock' => 'datetime',
-        'estado' => 'integer'
+        'fecha_restock' => 'datetime'
     ];
-    
-    // Valores por defecto
-    protected $attributes = [
-        'estado' => 1,
-        'stock' => 0
-    ];
+
+    // Para eliminación lógica
+    protected $dates = ['deleted_at'];
 }
