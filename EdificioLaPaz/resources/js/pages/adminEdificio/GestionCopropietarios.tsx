@@ -11,7 +11,7 @@ interface Copropietario {
 }
 
 interface PageProps {
-  copropietarios?: Copropietario[]; // <-- ahora es opcional
+  copropietarios?: Copropietario[]; 
 }
 
 export default function GestionCopropietarios({ copropietarios = [] }: PageProps) {

@@ -8,19 +8,27 @@ interface Copropietario {
   telefono: string;
   email: string;
   rol: string;
+  departamento_id?: number;  
+}
+
+interface Departamento {
+  id_departamentos: number;
+  descripcion: string;
 }
 
 interface Props {
   copropietario: Copropietario;
+  departamentos: Departamento[];
 }
 
-export default function EditarCopropietario({ copropietario }: Props) {
+export default function EditarCopropietario({ copropietario, departamentos }: Props) {
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     telefono: "",
     email: "",
     rol: "",
+    departamento_id: 0,
   });
 
   useEffect(() => {
@@ -31,14 +39,18 @@ export default function EditarCopropietario({ copropietario }: Props) {
         telefono: copropietario.telefono || "",
         email: copropietario.email || "",
         rol: copropietario.rol || "",
+        departamento_id: copropietario.departamento_id || 0,
       });
     }
   }, [copropietario]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const { name, value } = e.target;
+  setFormData(prev => ({
+    ...prev,
+    [name]: name === "departamento_id" ? Number(value) : value, // casteo a número
+  }));
+};
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -49,6 +61,7 @@ export default function EditarCopropietario({ copropietario }: Props) {
       telefono: formData.telefono,
       email: formData.email,
       rol: formData.rol,
+      departamento_id: formData.departamento_id,
     });
   };
 
@@ -88,6 +101,18 @@ export default function EditarCopropietario({ copropietario }: Props) {
                 <option value="copropietario">Copropietario</option>
                 <option value="dueño">Dueño</option>
                 <option value="administrador">Administrador</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold mb-1" htmlFor="departamento_id">Departamento</label>
+              <select id="departamento_id" name="departamento_id" value={formData.departamento_id} onChange={handleChange}
+                className="w-full px-4 py-2 rounded border border-gray-300" required>
+                <option value="">Seleccionar Departamento</option>
+                {departamentos.map((dep) => (
+                  <option key={dep.id_departamentos} value={dep.id_departamentos}>
+                    {dep.descripcion}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

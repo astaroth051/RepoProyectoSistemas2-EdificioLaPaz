@@ -58,9 +58,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
                         </Button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-600">
+                    <div className="mt-6 text-center text-sm text-black">
                         <span>Retornar </span>
-                        <TextLink href={route('login')}>Iniciar sesión</TextLink>
+                        <TextLink href={route('login')} className='text-gray-500'>Iniciar sesión</TextLink>
                     </div>
                 </div>
             </div>

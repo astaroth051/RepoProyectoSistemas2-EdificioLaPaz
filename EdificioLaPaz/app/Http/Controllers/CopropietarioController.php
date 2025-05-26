@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Departamento;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -49,6 +50,7 @@ class CopropietarioController extends Controller
             'telefono' => 'required|string|max:20',
             'email' => 'required|email|max:255',
             'rol' => 'required|string',
+            'departamento_id' => 'required|exists:departamentos,id_departamentos',
         ]);
 
         $user->update($validated);
@@ -60,6 +62,7 @@ class CopropietarioController extends Controller
     {
         // Si tu campo es 'id_user', usa where
         $user = User::where('id_user', $id)->firstOrFail();
+        $departamentos = Departamento::select('id_departamentos', 'descripcion')->get();
 
         return Inertia::render('adminEdificio/EditarCopropietario', [
             'copropietario' => [
@@ -69,7 +72,9 @@ class CopropietarioController extends Controller
                 'telefono' => $user->telefono,
                 'email' => $user->email,
                 'rol' => $user->rol,
-            ]
+                'departamento_id' => $user->departamento_id,
+            ],
+            'departamentos' => $departamentos,
         ]);
     }
 
@@ -90,7 +95,6 @@ class CopropietarioController extends Controller
 
     public function store(Request $request)
     {
-        // Validación de los datos que el formulario envía
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'lastname' => 'required|string|max:100',
@@ -98,6 +102,7 @@ class CopropietarioController extends Controller
             'email' => 'required|email|max:100|unique:users,email',
             'password' => 'required|string|min:6',
             'rol' => 'required|string|in:copropietario,dueño,administrador',
+            'departamento_id' => 'required|exists:departamentos,id_departamentos',
         ]);
 
         $copropietario = new User();
@@ -107,10 +112,12 @@ class CopropietarioController extends Controller
         $copropietario->email = $validated['email'];
         $copropietario->password = bcrypt($validated['password']);
         $copropietario->rol = $validated['rol'];
+        $copropietario->departamento_id = $validated['departamento_id']; 
         $copropietario->save();
 
         return redirect('/gestion-copropietarios');
     }
+    
     public function toggleRol($id)
     {
         $user = User::findOrFail($id);
@@ -138,4 +145,5 @@ class CopropietarioController extends Controller
 
         return response()->json(['success' => true]);
     }
+    
 }

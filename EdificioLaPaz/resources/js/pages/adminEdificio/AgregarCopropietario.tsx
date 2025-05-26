@@ -1,7 +1,15 @@
 import { Head, Link, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
 
-export default function AgregarCopropietario() {
+type Departamento = {
+  id: number;
+  descripcion: string;
+};
+interface Props {
+  departamentos: Departamento[];
+}
+
+export default function AgregarCopropietario({ departamentos }: Props) {
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -9,6 +17,7 @@ export default function AgregarCopropietario() {
     email: "",
     password: "",
     rol: "copropietario",
+    departamento_id: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -64,6 +73,18 @@ export default function AgregarCopropietario() {
                 <option value="dueño">Dueño</option>
                 <option value="administrador">Administrador Micromarket</option>
                 <option value="copropietario">Copropietario</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Departamento</label>
+              <select name="departamento_id" value={formData.departamento_id} onChange={handleChange}
+                className="w-full px-4 py-2 rounded border border-gray-300" required>
+                <option value="">Seleccionar departamento</option>
+                {departamentos.map((dep) => (
+                  <option key={dep.id} value={dep.id}>
+                    {dep.descripcion}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

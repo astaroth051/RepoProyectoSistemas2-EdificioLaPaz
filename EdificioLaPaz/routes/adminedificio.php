@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\CopropietarioController;
 use App\Http\Controllers\CajaAhorroController;
+use App\Models\Departamento;
 
 Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
 
@@ -16,7 +17,7 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
     // Gestión de copropietarios
     Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
         ->name('gestion-copropietarios');
-    Route::post('/copropietarios/{id}/desactivar', [CopropietarioController::class, 'desactivar']);
+    //Route::post('/copropietarios/{id}/desactivar', [CopropietarioController::class, 'desactivar']);
 
     //Administrador micromarket
     Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
@@ -24,7 +25,10 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
 
     // Formulario para agregar copropietario
     Route::get('/agregar-copropietario', function () {
-        return Inertia::render('adminEdificio/AgregarCopropietario');
+    $departamentos = Departamento::select('id_departamentos as id', 'descripcion')->get();
+        return Inertia::render('adminEdificio/AgregarCopropietario', [
+            'departamentos' => $departamentos
+        ]);
     })->name('agregar-copropietario');
 
     // Guardar nuevo copropietario (POST)
