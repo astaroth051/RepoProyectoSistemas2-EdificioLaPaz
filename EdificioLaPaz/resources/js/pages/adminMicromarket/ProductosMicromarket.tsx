@@ -11,47 +11,29 @@ interface Producto {
   imagen: string;
 }
 
-export default function ProductosMicromarket() {
-  const [busqueda, setBusqueda] = useState("");
-  const [filtroStock, setFiltroStock] = useState<"todos" | "conStock" | "sinStock">("todos");
+interface PageProps {
+  productos: Producto[];
+  filtros?: {
+    busqueda?: string;
+    filtroStock?: string;
+  };
+}
 
-  const [productos] = useState<Producto[]>([
-    {
-      id: 1,
-      nombre: "Arroz 5kg",
-      categoria: "Alimentos",
-      stock: 12,
-      precio: 50,
-      imagen: "https://via.placeholder.com/60",
-    },
-    {
-      id: 2,
-      nombre: "Aceite vegetal",
-      categoria: "Alimentos",
-      stock: 0,
-      precio: 30,
-      imagen: "https://via.placeholder.com/60",
-    },
-    {
-      id: 3,
-      nombre: "Detergente 1L",
-      categoria: "Limpieza",
-      stock: 5,
-      precio: 15,
-      imagen: "https://via.placeholder.com/60",
-    },
-  ]);
+export default function ProductosMicromarket({ productos, filtros }: PageProps) {
+  const [busqueda, setBusqueda] = useState(filtros?.busqueda || "");
+  const [filtroStock, setFiltroStock] = useState<"todos" | "conStock" | "sinStock">(
+    filtros?.filtroStock as "todos" | "conStock" | "sinStock" || "todos"
+  );
 
   const productosFiltrados = productos
-    .filter(p => {
-      const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
-      const coincideStock =
-        filtroStock === "todos"
-          ? true
-          : filtroStock === "conStock"
-          ? p.stock > 0
-          : p.stock === 0;
-      return coincideBusqueda && coincideStock;
+    .filter((p) => {
+      const termino = busqueda.toLowerCase();
+      const cumpleBusqueda = p.nombre.toLowerCase().includes(termino);
+      const cumpleStock = 
+        filtroStock === "todos" ||
+        (filtroStock === "conStock" && p.stock > 0) ||
+        (filtroStock === "sinStock" && p.stock <= 0);
+      return cumpleBusqueda && cumpleStock;
     });
 
   return (
@@ -82,9 +64,18 @@ export default function ProductosMicromarket() {
 
         {/* Filtros */}
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-          <input type="text" placeholder="Buscar producto..." className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 w-full md:w-1/2" 
-          value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
-          <select value={filtroStock} onChange={(e) => setFiltroStock(e.target.value as "todos" | "conStock" | "sinStock")} className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 w-full md:w-1/3">
+          <input 
+            type="text" 
+            placeholder="Buscar producto..." 
+            className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 w-full md:w-1/2" 
+            value={busqueda} 
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+          <select 
+            value={filtroStock} 
+            onChange={(e) => setFiltroStock(e.target.value as "todos" | "conStock" | "sinStock")} 
+            className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 w-full md:w-1/3"
+          >
             <option value="todos">Todos</option>
             <option value="conStock">Con stock</option>
             <option value="sinStock">Sin stock</option>
@@ -114,11 +105,18 @@ export default function ProductosMicromarket() {
                   <td className="px-4 py-4 whitespace-nowrap">{p.stock}</td>
                   <td className="px-4 py-4 whitespace-nowrap">{p.precio.toFixed(2)}</td>
                   <td className="px-4 py-4 text-center space-x-2">
-                    {/*<Link href={`/editar-productos/${p.id}`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">*/}
-                    <Link href={`/editar-productos`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">
+                    <Link href={`/editar-productos/${p.id}`} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">
                       Editar
                     </Link>
-                    <button onClick={() => alert(`Eliminar producto: ${p.nombre}`)}className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                    <button 
+                      onClick={() => {
+                        if (confirm(`¿Estás seguro de eliminar el producto ${p.nombre}?`)) {
+                          // Aquí deberías hacer una llamada a la API para eliminar
+                          window.location.href = `/productos/${p.id}/eliminar`;
+                        }
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    >
                       Eliminar
                     </button>
                   </td>

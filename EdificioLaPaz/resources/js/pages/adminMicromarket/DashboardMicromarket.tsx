@@ -29,7 +29,7 @@ export default function DashboardMicromarket() {
           <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4"/>
           <h1 className="text-2xl font-bold text-center mb-8">Admin MicroMarket La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
-            <a href="/productos-micromarket" className="hover:text-[#10B981] text-xl">📦 Productos</a>
+            <a href="/gestion-articulos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
             <a href="/recarga-saldo" className="hover:text-[#10B981] text-xl">📲 Recarga Saldo</a>
             <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
           </nav>

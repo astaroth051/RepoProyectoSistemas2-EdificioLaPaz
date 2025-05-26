@@ -13,38 +13,35 @@ class ProductoController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $busqueda = $request->input('busqueda', '');
-        $filtroStock = $request->input('filtroStock', 'todos');
-        
-        $query = Producto::query();
-        
-        // Aplicar filtro de búsqueda
-        if (!empty($busqueda)) {
-            $query->where('nombre', 'like', "%{$busqueda}%");
-        }
-        
-        // Aplicar filtro de stock
-        switch ($filtroStock) {
-            case 'conStock':
-                $query->where('stock', '>', 0);
-                break;
-            case 'sinStock':
-                $query->where('stock', '<=', 0);
-                break;
-            // 'todos' no necesita condición adicional
-        }
-        
-        $productos = $query->get();
-        
-        return Inertia::render('adminMicromarket/ProductosMicromarket', [
-            'productos' => $productos,
-            'filtros' => [
-                'busqueda' => $busqueda,
-                'filtroStock' => $filtroStock
-            ]
-        ]);
+{
+    $busqueda = $request->input('busqueda', '');
+    $filtroStock = $request->input('filtroStock', 'todos');
+    
+    $query = Producto::query();
+    
+    if (!empty($busqueda)) {
+        $query->where('nombre', 'like', "%{$busqueda}%");
     }
+    
+    switch ($filtroStock) {
+        case 'conStock':
+            $query->where('stock', '>', 0);
+            break;
+        case 'sinStock':
+            $query->where('stock', '<=', 0);
+            break;
+    }
+    
+    $productos = $query->get();
+    
+    return Inertia::render('adminMicromarket/ProductosMicromarket', [
+        'productos' => $productos,
+        'filtros' => [
+            'busqueda' => $busqueda,
+            'filtroStock' => $filtroStock
+        ]
+    ]);
+}
 
     /**
      * Show the form for creating a new resource.

@@ -58,7 +58,7 @@ export default function RecargaSaldo() {
           <h1 className="text-2xl font-bold text-center mb-8"> Admin MicroMarket La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
             <a href="/dashboard-micromarket" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
-            <a href="/productos-micromarket" className="hover:text-[#10B981] text-xl">📦 Productos</a>
+            <a href="/gestion-articulos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
             <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
           </nav>
         </div>

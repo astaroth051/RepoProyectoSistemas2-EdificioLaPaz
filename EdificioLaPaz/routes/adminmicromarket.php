@@ -1,8 +1,9 @@
 <?php
-use App\Http\Controllers\ProductoController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ArticulosController;
 //micromarket dashboard
 //ruta protegida
 /*Route::middleware(['auth', 'verified'])->group(function () {
@@ -10,11 +11,14 @@ use Inertia\Inertia;
         return Inertia::render('adminMicromarket/DashboardMicromarket');
     })->name('dashboard-micromarket');
 });*/
+
 //ruta sin proteccion
+
 Route::get('/dashboard-micromarket', function () {
     return Inertia::render('adminMicromarket/DashboardMicromarket');
 })->name('dashboard-micromarket');
 
+Route::get('/gestion-articulos', [ArticulosController::class, 'index'])->name('gestion-articulos');
 //productos micromarket
 //ruta protegida
 /*Route::middleware(['auth', 'verified'])->group(function () {
@@ -26,6 +30,9 @@ Route::get('/dashboard-micromarket', function () {
 Route::get('/productos-micromarket', function () {
     return Inertia::render('adminMicromarket/ProductosMicromarket');
 })->name('productos-micromarket');
+Route::get('/articulos-micromarket', function () {
+    return Inertia::render('adminMicromarket/GestionArticulos');
+})->name('articulos-micromarket');
 
 //agregar productos micromarket
 //ruta protegida
@@ -41,6 +48,9 @@ Route::get('/agregar-productos', function () {
 Route::post('/agregar-productos', [ProductoController::class, 'store'])
      ->name('agregar-productos.store');
 
+     
+Route::post('/agregar-productos', [ArticulosController::class, 'store'])
+     ->name('agregar-productos.store');
 //editar productos micromarket
 //ruta protegida
 /*Route::middleware(['auth', 'verified'])->group(function () {
@@ -64,29 +74,22 @@ Route::get('/editar-productos', function () {
 Route::get('/recarga-saldo', function () {
     return Inertia::render('adminMicromarket/RecargaSaldo');
 })->name('recarga-saldo');
-Route::get('/productos', [ProductoController::class, 'index'])
-     ->name('productos-micromarket');
+// Productos Micromarket
+//Route::get('/productos-micromarket', [ProductoController::class, 'index'])
+     //->name('productos-micromarket');
 
-// Mostrar formulario de creación (CREATE - Form)
-Route::get('/productos/crear', [ProductoController::class, 'create'])
-     ->name('productos.create');
+// Agregar Producto
+//Route::get('/agregar-productos', [ProductoController::class, 'create'])
+     //->name('agregar-productos');
+//Route::post('/agregar-productos', [ProductoController::class, 'store'])
+     //->name('productos.store');
 
-// Guardar nuevo producto (CREATE - Process)
-Route::post('/productos', [ProductoController::class, 'store'])
-     ->name('productos.store');
+// Editar Producto
+//Route::get('/editar-productos/{producto}', [ProductoController::class, 'edit'])
+  //   ->name('editar-productos');
+//Route::put('/productos/{producto}', [ProductoController::class, 'update'])
+  //   ->name('productos.update');
 
-// Mostrar detalles de un producto (READ single)
-Route::get('/productos/{producto}', [ProductoController::class, 'show'])
-     ->name('productos.show');
-
-// Mostrar formulario de edición (UPDATE - Form)
-Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])
-     ->name('productos.edit');
-
-// Actualizar producto (UPDATE - Process)
-Route::put('/productos/{producto}', [ProductoController::class, 'update'])
-     ->name('productos.update');
-
-// Eliminar producto (DELETE)
-Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])
-     ->name('productos.destroy');
+// Eliminar Producto
+//Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])
+  //   ->name('productos.destroy');

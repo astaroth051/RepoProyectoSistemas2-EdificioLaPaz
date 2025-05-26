@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model
 {
-    use  SoftDeletes;
-
+    
     protected $table = 'productos';
     protected $primaryKey = 'id_productos';
     public $timestamps = false; 
