@@ -20,6 +20,7 @@ class CopropietarioController extends Controller
             'email as correo'
         )
         ->where('rol', 'copropietario')
+        //->where('estado', 'activo') 
         ->get();
 
         return Inertia::render('adminEdificio/GestionCopropietarios', [
@@ -123,5 +124,18 @@ class CopropietarioController extends Controller
         $user->save();
 
         return response()->json(['success' => true, 'rol' => $user->rol]);
+    }
+
+    public function desactivar($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado.']);
+        }
+
+        $user->estado = 'inactivo'; // O `activo = false` según tu campo
+        $user->save();
+
+        return response()->json(['success' => true]);
     }
 }

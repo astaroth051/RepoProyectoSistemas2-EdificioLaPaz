@@ -1,4 +1,3 @@
-// Components
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
@@ -8,7 +7,6 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { data, setData, post, processing, errors } = useForm<Required<{ email: string }>>({
@@ -17,47 +15,55 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
         post(route('password.email'));
     };
 
     return (
-        <AuthLayout title="Recuperacion contraseña" description="Ingresa tu correo electronico para recibir un enlace de restablecimiento de contraseña.">
-            <Head title="Recuperacion contraseña" />
+        <>
+            <Head title="Recuperación contraseña">
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
 
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
-
-            <div className="space-y-6">
-                <form onSubmit={submit}>
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Direccion email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            name="email"
-                            autoComplete="off"
-                            value={data.email}
-                            autoFocus
-                            onChange={(e) => setData('email', e.target.value)}
-                            placeholder="email@example.com"
-                        />
-
-                        <InputError message={errors.email} />
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 via-teal-100 to-blue-50 p-6 text-black">
+                <div className="w-full max-w-md rounded-xl bg-white shadow-xl border border-teal-200 p-8">
+                    <div className="mb-6 text-center">
+                        <img src="/images/LogoMarket.png" alt="Micromarket" className="h-16 mx-auto mb-4" />
+                        <h1 className="text-2xl font-semibold text-teal-700">Recuperar contraseña</h1>
+                        <p className="text-sm text-gray-600 mt-1">
+                            Ingresa tu correo electrónico para recibir un enlace de restablecimiento de contraseña.
+                        </p>
                     </div>
 
-                    <div className="my-6 flex items-center justify-start">
-                        <Button className="w-full" disabled={processing}>
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                    {status && (
+                        <div className="mb-4 rounded bg-green-100 px-4 py-2 text-center text-sm font-medium text-green-700">
+                            {status}
+                        </div>
+                    )}
+
+                    <form onSubmit={submit} className="space-y-6">
+                        <div>
+                            <Label htmlFor="email">Dirección email</Label>
+                            <Input id="email" type="email" name="email" autoComplete="off" value={data.email} autoFocus placeholder="email@example.com"
+                                onChange={(e) => setData('email', e.target.value)} className="mt-1"/>
+                            <InputError message={errors.email} className="mt-1" />
+                        </div>
+
+                        <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white" disabled={processing}>
+                            {processing && <LoaderCircle className="h-4 w-4 animate-spin mr-2" />}
                             Enviar enlace de restablecimiento
                         </Button>
-                    </div>
-                </form>
+                    </form>
 
-                <div className="text-muted-foreground space-x-1 text-center text-sm">
-                    <span>volver a </span>
-                    <TextLink href={route('login')}>inicio sesion</TextLink>
+                    <div className="mt-6 text-center text-sm text-gray-600">
+                        <span>Retornar </span>
+                        <TextLink href={route('login')}>Iniciar sesión</TextLink>
+                    </div>
                 </div>
             </div>
-        </AuthLayout>
+        </>
     );
 }

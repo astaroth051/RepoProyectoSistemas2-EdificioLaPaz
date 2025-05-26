@@ -6,7 +6,6 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
 
 interface ResetPasswordProps {
     token: string;
@@ -36,63 +35,52 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
     };
 
     return (
-        <AuthLayout title="Reset password" description="Please enter your new password below">
-            <Head title="Reset password" />
+        <>
+            <Head title="Reset password">
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
 
-            <form onSubmit={submit}>
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            name="email"
-                            autoComplete="email"
-                            value={data.email}
-                            className="mt-1 block w-full"
-                            readOnly
-                            onChange={(e) => setData('email', e.target.value)}
-                        />
-                        <InputError message={errors.email} className="mt-2" />
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 via-teal-100 to-blue-50 p-6 text-black">
+                <div className="w-full max-w-md rounded-xl bg-white shadow-xl border border-teal-200 p-8">
+                    <div className="mb-6 text-center">
+                        <img src="/images/LogoMarket.png" alt="Micromarket" className="h-16 mx-auto mb-4" />
+                        <h1 className="text-2xl font-semibold text-teal-700">Restablecer contraseña</h1>
+                        <p className="text-sm text-gray-600 mt-1">Por favor, ingresa tu nueva contraseña</p>
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            name="password"
-                            autoComplete="new-password"
-                            value={data.password}
-                            className="mt-1 block w-full"
-                            autoFocus
-                            onChange={(e) => setData('password', e.target.value)}
-                            placeholder="Password"
-                        />
-                        <InputError message={errors.password} />
-                    </div>
+                    <form onSubmit={submit} className="space-y-4">
+                        <div>
+                            <Label htmlFor="email">Correo electrónico</Label>
+                            <Input id="email" type="email" name="email" value={data.email} readOnly 
+                            onChange={(e) => setData('email', e.target.value)} className="mt-1"/>
+                            <InputError message={errors.email} className="mt-1" />
+                        </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm password</Label>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
-                            name="password_confirmation"
-                            autoComplete="new-password"
-                            value={data.password_confirmation}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                            placeholder="Confirm password"
-                        />
-                        <InputError message={errors.password_confirmation} className="mt-2" />
-                    </div>
+                        <div>
+                            <Label htmlFor="password">Nueva contraseña</Label>
+                            <Input id="password" type="password" name="password" value={data.password}
+                                onChange={(e) => setData('password', e.target.value)} autoFocus placeholder="********" className="mt-1"/>
+                            <InputError message={errors.password} className="mt-1" />
+                        </div>
 
-                    <Button type="submit" className="mt-4 w-full" disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Reset password
-                    </Button>
+                        <div>
+                            <Label htmlFor="password_confirmation">Confirmar contraseña</Label>
+                            <Input id="password_confirmation" type="password" name="password_confirmation" value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)} placeholder="********" className="mt-1"/>
+                            <InputError message={errors.password_confirmation} className="mt-1" />
+                        </div>
+
+                        <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-4" disabled={processing}>
+                            {processing && <LoaderCircle className="h-4 w-4 animate-spin mr-2" />}
+                            Restablecer contraseña
+                        </Button>
+                    </form>
                 </div>
-            </form>
-        </AuthLayout>
+            </div>
+        </>
     );
 }

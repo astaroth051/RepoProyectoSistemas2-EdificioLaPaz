@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
     // Gestión de copropietarios
     Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
         ->name('gestion-copropietarios');
+    Route::post('/copropietarios/{id}/desactivar', [CopropietarioController::class, 'desactivar']);
 
     //Administrador micromarket
     Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
