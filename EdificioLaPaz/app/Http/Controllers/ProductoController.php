@@ -84,17 +84,17 @@ class ProductoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Producto $producto)
+    public function edit(Producto $productos)
     {
         return Inertia::render('adminMicromarket/EditarProductos', [
-            'producto' => $producto
+            'producto' => $productos
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Producto $producto)
+    public function update(Request $request, Producto $productos)
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
@@ -105,7 +105,7 @@ class ProductoController extends Controller
             'imagen' => 'required|url|max:255',
         ]);
 
-        $producto->update($validated);
+        $productos->update($validated);
         
         return redirect()->route('productos-micromarket')
                          ->with('success', 'Producto actualizado exitosamente');

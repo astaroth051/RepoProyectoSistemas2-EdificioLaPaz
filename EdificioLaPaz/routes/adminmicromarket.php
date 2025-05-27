@@ -93,3 +93,15 @@ Route::get('/recarga-saldo', function () {
 // Eliminar Producto
 //Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])
   //   ->name('productos.destroy');
+// Mostrar formulario de edición
+Route::get('/editar-productos/{id_productos}', [ArticulosController::class, 'edit'])->name('editar-productos');
+
+// Actualizar producto
+/*Route::post('/editar-productos/{id_productos}/update', [ArticulosController::class, 'update'])->name('editar-productos.update');
+Route::post('/api/editar-productos/{id_productos}/update', [ArticulosController::class, 'update']);
+
+Route::post('/editar-productos', [ArticulosController::class, 'edit'])
+     ->name('agregar-productos.edit');
+// Eliminar productos (si es necesario)
+Route::delete('/productos/{id_productos}', [ArticulosController::class, 'destroy'])->name('productos.destroy');*/
+

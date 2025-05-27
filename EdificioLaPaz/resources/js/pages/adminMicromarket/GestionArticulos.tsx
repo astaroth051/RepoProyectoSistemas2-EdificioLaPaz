@@ -86,18 +86,25 @@ export default function GestionCopropietarios({ productos }: PageProps) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {productosFiltrados.map((produc, index) => (
+                
                 <tr key={produc.id || index}> {/* Uso del índice como fallback */}
+                <td className="px-4 py-3 whitespace-nowrap">
+                <img src={produc.imagen || "imagen-predeterminada.png"} alt={produc.nombre} className="w-16 h-16 object-cover rounded" />
+                </td>
                   <td className="px-4 py-3 whitespace-nowrap">{produc.nombre}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{produc.categoria}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{produc.stock}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{produc.precio}</td>
                   <td className="px-4 py-3 whitespace-nowrap text-center space-x-2">
-                    <Link
-                      href={`/editar-copropietario/${produc.id}`}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                    >
-                      Editar
-                    </Link>
+                  
+                      <Link
+                        href={`/editar-productos/${produc.id}`}
+                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+                      >
+                        Editar
+                      </Link>
+    
+                  
                     <button
                       onClick={() => alert(`Eliminar producto: ${produc.nombre}`)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
