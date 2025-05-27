@@ -11,7 +11,7 @@ interface Copropietario {
 }
 
 interface PageProps {
-  copropietarios?: Copropietario[]; // <-- ahora es opcional
+  copropietarios?: Copropietario[]; 
 }
 
 export default function GestionCopropietarios({ copropietarios = [] }: PageProps) {
@@ -30,6 +30,31 @@ export default function GestionCopropietarios({ copropietarios = [] }: PageProps
       const nombreCompletoB = `${b.apellido} ${b.nombre}`.toLowerCase();
       return nombreCompletoA.localeCompare(nombreCompletoB);
     });
+    
+    const eliminarCopropietario = async (id: number) => {
+      if (!confirm("¿Estás seguro de que quieres eliminar este copropietario?")) return;
+
+      try {
+        const response = await fetch(`/copropietarios/${id}/desactivar`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement).content,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          window.location.reload(); // o actualiza el estado sin recargar
+        } else {
+          alert("No se pudo eliminar el copropietario.");
+        }
+      } catch (error) {
+        console.error("Error eliminando:", error);
+        alert("Ocurrió un error al eliminar.");
+      }
+    };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
@@ -91,7 +116,7 @@ export default function GestionCopropietarios({ copropietarios = [] }: PageProps
                       Editar
                     </Link>
                     <button
-                      onClick={() => alert(`Eliminar copropietario: ${copro.nombre}`)}
+                      onClick={() => eliminarCopropietario(copro.id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                     >
                       Eliminar

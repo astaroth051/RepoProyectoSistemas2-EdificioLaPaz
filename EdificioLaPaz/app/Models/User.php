@@ -61,7 +61,7 @@ class User extends Authenticatable
     // Relación con la tabla departamentos
     public function departamento()
     {
-        //return $this->belongsTo(Departamento::class, 'departamento_id');
+        return $this->belongsTo(Departamento::class, 'departamento_id');
     }
 
 

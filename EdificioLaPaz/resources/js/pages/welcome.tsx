@@ -22,10 +22,7 @@ export default function Welcome() {
                             </Link>
                         ) : (
                             <>
-                                <Link
-                                    href={route('login')}
-                                    className="rounded px-5 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700"
-                                >
+                                <Link href={route('login')} className="rounded px-5 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700">
                                     Iniciar sesión
                                 </Link>
                             </>
@@ -54,11 +51,7 @@ export default function Welcome() {
                         </div>
                     </div>
                     <div className="relative w-full lg:w-[438px] bg-gradient-to-tr from-teal-200 via-green-200 to-blue-100 rounded-t-lg lg:rounded-tr-lg lg:rounded-l-none shadow-inner">
-                        <img
-                            src="/images/LogoMarket.png"
-                            alt="Micromarket"
-                            className="w-full h-full object-cover rounded-t-lg lg:rounded-tr-lg"
-                        />
+                        <img src="/images/LogoMarket.png" alt="Micromarket" className="w-full h-full object-cover rounded-t-lg lg:rounded-tr-lg"/>
                     </div>
                 </main>
             </div>
