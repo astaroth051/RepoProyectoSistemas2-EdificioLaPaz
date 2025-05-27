@@ -79,18 +79,24 @@ class VentaController extends Controller
                 'estado' => $estadoVenta,
             ]);
 
-            // Crear detalle de venta
+            // Crear detalle de venta y reducir stock
             foreach ($request->productos as $item) {
                 if (!isset($item['producto_id'], $item['cantidad'], $item['subtotal'])) {
                     continue; // saltar items inválidos
                 }
 
+                // Crear el detalle de venta
                 DetalleVenta::create([
                     'venta_id' => $venta->id_ventas,
                     'producto_id' => (int) $item['producto_id'],
                     'cantidad' => (int) $item['cantidad'],
                     'subtotal' => (float) $item['subtotal'],
                 ]);
+
+                // Reducir el stock del producto comprado
+                DB::table('productos')
+                    ->where('id_productos', $item['producto_id'])
+                    ->decrement('stock', (int) $item['cantidad']);
             }
 
             // Crear plan de pago

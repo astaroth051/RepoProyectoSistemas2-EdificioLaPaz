@@ -15,7 +15,7 @@ export default function Welcome() {
                     <nav className="flex items-center justify-end gap-4">
                         {auth.user ? (
                             <Link
-                                href={route('dashboard')}
+                                href={route('home')}
                                 className="rounded px-5 py-2 text-sm text-white bg-teal-600 hover:bg-teal-700"
                             >
                                 Ir al Panel
@@ -46,7 +46,7 @@ export default function Welcome() {
                         </ul>
                         <div className="mt-6">
                             <Link
-                                href={route('dashboard')}
+                                href={route('login')}
                                 className="inline-block rounded bg-teal-500 px-6 py-2 text-white hover:bg-teal-600"
                             >
                                 Explorar tienda

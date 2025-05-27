@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
+import Modal from "@/components/Modal";
 
 interface ProductoCompra {
     id_productos: number;
@@ -31,6 +32,12 @@ export default function PlanDePagos() {
     const año = hoy.getFullYear();
     const mes = hoy.getMonth(); // 0-indexed
     const diaActual = hoy.getDate();
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalType, setModalType] = useState<"success" | "error">("success");
+    const [redireccionPendiente, setRedireccionPendiente] = useState(false);
 
     const calcularFechasDePago = React.useCallback(() => {
         const fechas: Date[] = [];
@@ -62,6 +69,13 @@ export default function PlanDePagos() {
 
     const diasMes = new Date(año, mes + 1, 0).getDate();
 
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (redireccionPendiente) {
+            router.visit('/productos'); // O cualquier ruta de destino que prefieras
+        }
+    };
+
     const confirmarPlan = async () => {
         console.log("Enviando a backend:", {
             codigo_ficha,
@@ -83,7 +97,11 @@ export default function PlanDePagos() {
 
             const response = await axios.post('/guardar-venta-con-plan', payload);
             if (response.status === 201) {
-                alert("Compra y plan de pagos registrados con éxito.");
+                setModalTitle("Compra Exitosa");
+                setModalMessage("Tu compra fue registrada correctamente.");
+                setModalType("success");
+                setModalVisible(true);
+                setRedireccionPendiente(true);
 
                 // 🧹 Limpiar localStorage
                 localStorage.removeItem("carrito");
@@ -91,13 +109,18 @@ export default function PlanDePagos() {
                 localStorage.removeItem("totalCompra");
 
                 // 🔁 Redirigir a productos (sin pasar props del carrito)
-                router.visit("/productos");
             }
         } catch (error) {
             console.error("Error al guardar el plan de pagos:", error);
-            alert("Ocurrió un error al registrar la compra.");
+            setModalTitle("Error");
+            setModalMessage("Ocurrió un error al guardar el plan de pagos.");
+            setModalType("error");
+            setModalVisible(true);
+            setRedireccionPendiente(true);
         }
     };
+
+
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen font-sans bg-[#F6F6FA] text-white overflow-x-hidden">
@@ -246,6 +269,13 @@ export default function PlanDePagos() {
                     </div>
                 </div>
             </main>
+            <Modal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+                type={modalType}
+            />
         </div>
     );
 }
