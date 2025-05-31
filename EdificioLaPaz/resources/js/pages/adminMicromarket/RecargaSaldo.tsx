@@ -1,5 +1,7 @@
-import { Head } from "@inertiajs/react";
+import { Head, router} from "@inertiajs/react";
 import { useState } from "react";
+import { usePage } from "@inertiajs/react";
+import type { PageProps as InertiaPageProps } from "@inertiajs/core";
 
 interface Copropietario {
   id: number;
@@ -8,19 +10,26 @@ interface Copropietario {
   numeroCuenta: string;
 }
 
-// Simulación de datos de los copropietarios
-const copropietariosEjemplo: Copropietario[] = [
-  { id: 1, nombre: "Ana María", apellido: "Gonzales", numeroCuenta: "1234567890" },
-  { id: 2, nombre: "Carlos", apellido: "Pérez", numeroCuenta: "0987654321" },
-  { id: 3, nombre: "Sofía", apellido: "Rodríguez", numeroCuenta: "1122334455" },
-];
+interface Flash {
+  success?: string;
+}
 
-export default function RecargaSaldo() {
-  const [monto, setMonto] = useState("");
+interface PageProps extends InertiaPageProps {
+  flash?: Flash;
+}
+
+interface Props {
+  copropietarios: Copropietario[];
+}
+
+export default function RecargaSaldo({ copropietarios }: Props) {
+  const { props } = usePage<PageProps>();
+  const success = props.flash?.success;
+  const [saldo, setSaldo] = useState("");
   const [filtro, setFiltro] = useState("");
   const [copropietarioSeleccionado, setCopropietarioSeleccionado] = useState<Copropietario | null>(null);
 
-  const copropietariosFiltrados = copropietariosEjemplo.filter(
+  const copropietariosFiltrados = copropietarios.filter(
     (copropietario) =>
       copropietario.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
       copropietario.apellido.toLowerCase().includes(filtro.toLowerCase())
@@ -32,19 +41,32 @@ export default function RecargaSaldo() {
 
   const handleCancelarRecarga = () => {
     setCopropietarioSeleccionado(null);
-    setMonto(""); // Opcional: también puedes resetear el monto
+    setSaldo("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (copropietarioSeleccionado) {
-      alert(
-        `Recarga de Bs. ${monto} para ${copropietarioSeleccionado.nombre} ${copropietarioSeleccionado.apellido}`
+      router.post(
+        "/recarga-saldo",
+        {
+          copropietario_id: copropietarioSeleccionado.id,
+          saldo: parseFloat(saldo),
+        },
+        {
+          preserveScroll: true, // opcional
+          onSuccess: () => {
+            setSaldo("");
+            setCopropietarioSeleccionado(null);
+          },
+        }
       );
-      setMonto("");
-    } else {
-      alert("Por favor, selecciona un copropietario.");
     }
+  };
+
+  const handleLogout = () => {
+    router.post("/logout");
   };
 
   return (
@@ -54,12 +76,14 @@ export default function RecargaSaldo() {
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
         <div>
-          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4"/>
-          <h1 className="text-2xl font-bold text-center mb-8"> Admin MicroMarket La Paz</h1>
+          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-center mb-8">Admin MicroMarket La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
             <a href="/dashboard-micromarket" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
             <a href="/productos-micromarket" className="hover:text-[#10B981] text-xl">📦 Productos</a>
-            <a href="/logout" className="hover:text-[#10B981] text-xl">🚪 Cerrar Sesión</a>
+            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">
+              🚪 Cerrar Sesión
+            </button>
           </nav>
         </div>
       </aside>
@@ -67,7 +91,11 @@ export default function RecargaSaldo() {
       {/* Contenido principal */}
       <main className="flex-1 p-4 md:p-6 max-w-5xl mx-auto bg-[#1E3A8A] border-2 border-[#10B981] text-white rounded-tl-2xl overflow-auto">
         <h2 className="text-2xl font-bold text-center mb-8">💳 Recarga de Saldo</h2>
-
+        {success && (
+          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            {success}
+          </div>
+        )}
         <div className="mb-4">
           <label htmlFor="filtroCopropietarios" className="block font-semibold mb-1">
             Buscar Copropietario
@@ -78,10 +106,13 @@ export default function RecargaSaldo() {
         <div className="mb-4 bg-white text-blue-900 rounded-xl shadow-md overflow-y-auto max-h-48">
           <ul className="divide-y divide-gray-200">
             {copropietariosFiltrados.map((copropietario) => (
-              <li key={copropietario.id} onClick={() => handleSeleccionarCopropietario(copropietario)} className={`px-4 py-2 cursor-pointer hover:bg-gray-100 
-                ${
+              <li
+                key={copropietario.id}
+                onClick={() => handleSeleccionarCopropietario(copropietario)}
+                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
                   copropietarioSeleccionado?.id === copropietario.id ? "bg-gray-200" : ""
-                }`}>
+                }`}
+              >
                 {copropietario.nombre} {copropietario.apellido}
               </li>
             ))}
@@ -110,7 +141,7 @@ export default function RecargaSaldo() {
 
             <div>
               <label className="block font-semibold mb-1">Monto a Recargar (Bs.)</label>
-              <input type="number" value={monto}onChange={(e) => setMonto(e.target.value)}placeholder="Ej. 50" required className="w-full border border-gray-300 rounded px-4 py-2"/>
+              <input type="number" value={saldo} onChange={(e) => setSaldo(e.target.value)} placeholder="Ej. 50" required className="w-full border border-gray-300 rounded px-4 py-2"/>
             </div>
 
             <div className="flex justify-end gap-4 pt-4">

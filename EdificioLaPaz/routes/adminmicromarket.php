@@ -1,64 +1,56 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Http\Controllers\ProductoMicromarketController;
+use App\Http\Controllers\RecargaSaldoController;
+use App\Http\Controllers\HistorialVentasController;
+use App\Http\Controllers\DashboardMicromarketController;
 
-//micromarket dashboard
-//ruta protegida
-/*Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard-micromarket', function () {
-        return Inertia::render('adminMicromarket/DashboardMicromarket');
-    })->name('dashboard-micromarket');
-});*/
-//ruta sin proteccion
-Route::get('/dashboard-micromarket', function () {
-    return Inertia::render('adminMicromarket/DashboardMicromarket');
-})->name('dashboard-micromarket');
 
-//productos micromarket
-//ruta protegida
-/*Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/productos-micromarket', function () {
-        return Inertia::render('adminMicromarket/ProductosMicromarket');
-    })->name('productos-micromarket');
-});*/
-//ruta sin proteccion
-Route::get('/productos-micromarket', function () {
-    return Inertia::render('adminMicromarket/ProductosMicromarket');
-})->name('productos-micromarket');
+Route::middleware(['auth', 'verified', 'checkRole:administrador'])->group(function () {
 
-//agregar productos micromarket
-//ruta protegida
-/*Route::middleware(['auth', 'verified'])->group(function () {
+   Route::get('/dashboard-micromarket', [DashboardMicromarketController::class, 'index'])
+        ->name('dashboard-micromarket');
+
+    Route::get('/historial-ventas/imprimir', [HistorialVentasController::class, 'imprimir']);
+
+
+    // Vista de productos micromarket 
+    Route::get('/productos-micromarket', [ProductoMicromarketController::class, 'index'])
+        ->name('productos-micromarket');
+
+    // Vista para agregar productos 
     Route::get('/agregar-productos', function () {
         return Inertia::render('adminMicromarket/AgregarProductos');
-    })->name('agregar-productost');
-});*/
-//ruta sin proteccion
-Route::get('/agregar-productos', function () {
-    return Inertia::render('adminMicromarket/AgregarProductos');
-})->name('agregar-productos');
+    })->name('agregar-productos');
 
-//editar productos micromarket
-//ruta protegida
-/*Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/editar-productos', function () {
-        return Inertia::render('adminMicromarket/EditarProductos');
-    })->name('editar-productos');
-});*/
-//ruta sin proteccion
-Route::get('/editar-productos', function () {
-    return Inertia::render('adminMicromarket/EditarProductos');
-})->name('editar-productos');
+    // Vista para editar productos 
+    Route::get('/productos-micromarket/{id}/editar', [ProductoMicromarketController::class, 'edit'])
+        ->name('productos.edit');
 
-//recarga saldo
-//ruta protegida
-/*Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/recarga-saldo', function () {
-        return Inertia::render('adminMicromarket/RecargaSaldo');
-    })->name('recarga-saldo');
-});*/
-//ruta sin proteccion
-Route::get('/recarga-saldo', function () {
-    return Inertia::render('adminMicromarket/RecargaSaldo');
-})->name('recarga-saldo');
+    // Actualizar producto 
+    Route::put('/productos-micromarket/{id}', [ProductoMicromarketController::class, 'update'])
+        ->name('productos.update');
+
+    // Guardar producto nuevo
+    Route::post('/productos-micromarket', [ProductoMicromarketController::class, 'store'])
+        ->name('productos.store');
+
+    // Borrar producto
+    Route::delete('/productos-micromarket/{id}', [ProductoMicromarketController::class, 'destroy'])
+        ->name('productos.destroy');
+
+    // Recarga de saldo
+    Route::get('/recarga-saldo', [RecargaSaldoController::class, 'index'])->name('recarga-saldo');
+    Route::post('/recarga-saldo', [RecargaSaldoController::class, 'recargar']);
+});
+
+    //logout
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/login');
+    })->middleware('auth')->name('logout');

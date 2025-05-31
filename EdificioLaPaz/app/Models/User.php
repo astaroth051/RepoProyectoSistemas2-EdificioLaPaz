@@ -23,6 +23,11 @@ class User extends Authenticatable
 
     // Si fuera necesario especificar el tipo (int en este caso, pero Laravel lo asume si es autoincremental)
     protected $keyType = 'int';
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'password_changed' => 'boolean', 
+    ];
 
     // Si tu tabla no se llama 'users', descomenta la siguiente línea:
     // protected $table = 'users';

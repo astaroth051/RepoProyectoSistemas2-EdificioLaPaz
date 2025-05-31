@@ -12,7 +12,14 @@ class CajaAhorro extends Model
 
     protected $primaryKey = 'id_cajas_ahorro';
 
-    protected $fillable = ['usuario_id', 'estado', 'fecha_desactivacion'];
+    protected $fillable = [
+        'usuario_id',
+        'estado',
+        'fecha_desactivacion',
+        'saldo',            
+        'tipo',             
+        'fecha',            
+    ];
 
     public function usuario()
     {

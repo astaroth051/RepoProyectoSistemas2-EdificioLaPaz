@@ -32,4 +32,8 @@ class Venta extends Model
     {
         return $this->hasOne(PlanPago::class, 'venta_id');
     }
+    public function detalleventas()
+    {
+        return $this->hasMany(DetalleVenta::class, 'venta_id', 'id');
+    }
 }

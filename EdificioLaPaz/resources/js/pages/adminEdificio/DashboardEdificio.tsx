@@ -49,11 +49,7 @@ export default function DashboardEdificio() {
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
         <div>
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/107/107831.png"
-            alt="Logo"
-            className="w-16 h-16 mx-auto mb-4"
-          />
+          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4"/>
           <h1 className="text-2xl font-bold text-center mb-8">
             Admin Edificio La Paz
           </h1>
@@ -61,7 +57,7 @@ export default function DashboardEdificio() {
             <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietarios</a>
             <a href="/cajas-ahorro-copropietario" className="hover:text-[#10B981] text-xl">📊 Cajas de Ahorro Copropietarios</a>
             <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">🏪 Administrador Micromarket</a>
-            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">🚪 Cerrar Sesión</button>
+            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full">🚪 Cerrar Sesión</button>          
           </nav>
         </div>
       </aside>
@@ -106,17 +102,9 @@ export default function DashboardEdificio() {
           </div>
 
           <div className="flex flex-col md:flex-row gap-2 mb-4">
-            <input
-              type="text"
-              value={nuevoRecordatorio}
-              onChange={(e) => setNuevoRecordatorio(e.target.value)}
-              placeholder="Escribe un nuevo recordatorio..."
-              className="flex-1 p-2 rounded-lg border border-gray-300"
-            />
-            <button
-              className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg shadow-md text-sm"
-              onClick={agregarRecordatorio}
-            >
+            <input type="text" value={nuevoRecordatorio} onChange={(e) => setNuevoRecordatorio(e.target.value)} placeholder="Escribe un nuevo recordatorio..."
+              className="flex-1 p-2 rounded-lg border border-gray-300"/>
+            <button className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg shadow-md text-sm" onClick={agregarRecordatorio}>
               + Agregar
             </button>
           </div>
@@ -125,10 +113,7 @@ export default function DashboardEdificio() {
             {recordatorios.map((recordatorio, index) => (
               <li key={`${recordatorio}-${index}`} className="flex justify-between items-center">
                 <span>{recordatorio}</span>
-                <button
-                  onClick={() => eliminarRecordatorio(index)}
-                  className="text-red-500 text-sm ml-2"
-                >
+                <button onClick={() => eliminarRecordatorio(index)} className="text-red-500 text-sm ml-2">
                   Eliminar
                 </button>
               </li>

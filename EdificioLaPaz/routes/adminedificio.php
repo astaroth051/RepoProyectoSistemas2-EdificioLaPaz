@@ -17,7 +17,6 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
     // Gestión de copropietarios
     Route::get('/gestion-copropietarios', [CopropietarioController::class, 'index'])
         ->name('gestion-copropietarios');
-    //Route::post('/copropietarios/{id}/desactivar', [CopropietarioController::class, 'desactivar']);
 
     //Administrador micromarket
     Route::get('/administrador-micromarket', [CopropietarioController::class, 'indexAdminMicromarket'])
@@ -31,26 +30,31 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
         ]);
     })->name('agregar-copropietario');
 
-    // Guardar nuevo copropietario (POST)
+    // Guardar nuevo copropietario 
     Route::post('/agregar-copropietario', [CopropietarioController::class, 'store'])
         ->name('copropietarios.store');
 
-    // Editar copropietario (GET)
+    // Editar copropietario 
     Route::get('/editar-copropietario/{id}', [CopropietarioController::class, 'edit'])
         ->name('editar-copropietario');
 
-    // Para rutas /copropietarios/{id}/edit usar la misma acción que el editar
+    // Eliminar copropietario
+    Route::post('/copropietarios/{id}/desactivarUsuario', [CopropietarioController::class, 'desactivarUsuario']);
+    // Reactivar copropietario
+    Route::post('/copropietarios/{id}/reactivarUsuario', [CopropietarioController::class, 'reactivarUsuario']);
+
+    // Para rutas /copropietarios/{id}/edit 
     Route::get('/copropietarios/{id}/edit', [CopropietarioController::class, 'edit']);
 
-    // Actualizar copropietario (POST)
+    // Actualizar copropietario 
     Route::post('/api/copropietarios/{id}/update', [CopropietarioController::class, 'update'])
         ->name('copropietarios.update');
 
-    // Cambiar rol del copropietario (POST)
+    // Cambiar rol del copropietario 
     Route::post('/copropietarios/{id}/toggle-rol', [CopropietarioController::class, 'toggleRol'])
         ->name('copropietarios.toggle-rol');
 
-    // Cajas de ahorro (controlador)
+    // Cajas de ahorro 
     Route::get('/cajas-ahorro-copropietario', [CajaAhorroController::class, 'index'])
         ->name('cajas-ahorro.index');
 
@@ -62,4 +66,12 @@ Route::middleware(['auth', 'verified', 'checkRole:dueño'])->group(function () {
 
     Route::post('/cajas-ahorro/desactivar/{usuario_id}', [CajaAhorroController::class, 'desactivarCaja'])
         ->name('cajas-ahorro.desactivar');
+
+    // Logout    
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/login');
+    })->middleware('auth')->name('logout');
 });

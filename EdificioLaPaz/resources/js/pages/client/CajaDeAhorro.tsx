@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -262,6 +262,9 @@ const CajaDeAhorro: React.FC = () => {
 
         doc.save("reporte-caja-ahorro.pdf");
     };
+    const handleLogout = () => {
+            router.post('/logout');
+        };
 
     const calcularTotalGastos = () => {
         return movFiltrados.reduce((total, m) => total + m.precioTotal, 0);
@@ -279,7 +282,7 @@ const CajaDeAhorro: React.FC = () => {
                     <nav className="flex flex-col gap-4 text-sm font-semibold items-center md:items-start">
                         <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
                         <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
-                        <a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>
+                        <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">🚪 Cerrar Sesión</button>
                     </nav>
                 </div>
             </aside>

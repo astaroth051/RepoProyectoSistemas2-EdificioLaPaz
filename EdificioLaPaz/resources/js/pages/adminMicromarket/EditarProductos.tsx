@@ -1,42 +1,45 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { useState } from "react";
 
 interface Producto {
   id: number;
   nombre: string;
-  descripcion: string;
+  descripcion?: string;
   precio: number;
   stock: number;
-  imagen?: string;
+  imagen?: string | null;
+  categoria: string;
+  estado?: number;
+  fecha_restock?: string | null;
 }
 
-// Este sería un producto de ejemplo (en producción vendría desde props o backend)
-const productoEjemplo: Producto = {
-  id: 1,
-  nombre: "Coca-Cola 500ml",
-  descripcion: "Bebida refrescante",
-  precio: 7,
-  stock: 15,
-  imagen: "https://via.placeholder.com/150",
-};
+interface Props {
+  producto: Producto;
+}
 
-export default function EditarProducto() {
-  const [nombre, setNombre] = useState(productoEjemplo.nombre);
-  const [descripcion, setDescripcion] = useState(productoEjemplo.descripcion);
-  const [precio, setPrecio] = useState(productoEjemplo.precio.toString());
-  const [stock, setStock] = useState(productoEjemplo.stock.toString());
-  const [imagen, setImagen] = useState<File | null>(null);
+export default function EditarProducto({ producto }: Props) {
+  const [nombre, setNombre] = useState(producto.nombre);
+  const [descripcion, setDescripcion] = useState(producto.descripcion || "");
+  const [precio, setPrecio] = useState(producto.precio.toString());
+  const [stock, setStock] = useState(producto.stock.toString());
+  const [categoria, setCategoria] = useState(producto.categoria);
+  const [imagen, setImagen] = useState(producto.imagen || "");
+  const [estado, setEstado] = useState(producto.estado ?? 1);
+  const [fechaRestock, setFechaRestock] = useState(producto.fecha_restock || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
+
+    router.put(`/productos-micromarket/${producto.id}`, {
       nombre,
       descripcion,
-      precio,
-      stock,
-      imagen: imagen ? imagen.name : "imagen anterior",
+      precio: parseFloat(precio),
+      stock: parseInt(stock, 10),
+      categoria,
+      estado,
+      fecha_restock: fechaRestock,
+      imagen, 
     });
-    alert("Producto editado");
   };
 
   return (
@@ -49,31 +52,57 @@ export default function EditarProducto() {
         <form onSubmit={handleSubmit} className="bg-white text-blue-900 p-6 rounded-xl shadow-md space-y-6">
           <div>
             <label className="block font-semibold mb-1">Nombre del Producto</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required />
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
+              className="w-full border border-gray-300 rounded px-4 py-2" required/>
           </div>
 
           <div>
             <label className="block font-semibold mb-1">Descripción</label>
-            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2"/>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold mb-1">Precio (Bs.)</label>
-              <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required/>
+              <input type="number" step="0.01" value={precio} onChange={(e) => setPrecio(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2" required/>
             </div>
 
             <div>
               <label className="block font-semibold mb-1">Cantidad en stock</label>
-              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2"required/>
+              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2" required/>
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold mb-1">Imagen del producto (opcional)</label>
-            <input type="file" accept="image/*" onChange={(e) => setImagen(e.target.files?.[0] || null)} className="w-full"/>
-            {productoEjemplo.imagen && (
-              <img src={productoEjemplo.imagen} alt="Producto actual" className="w-32 h-32 object-cover mt-2 border border-gray-300 rounded"/>
+            <label className="block font-semibold mb-1">Categoría</label>
+            <input type="text" value={categoria} onChange={(e) => setCategoria(e.target.value)}
+              className="w-full border border-gray-300 rounded px-4 py-2" required/>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-semibold mb-1">Estado</label>
+              <select value={estado} onChange={(e) => setEstado(parseInt(e.target.value))} className="w-full border border-gray-300 rounded px-4 py-2">
+                <option value={1}>Activo</option>
+                <option value={0}>Inactivo</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Fecha Restock</label>
+              <input type="date" value={fechaRestock} onChange={(e) => setFechaRestock(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2"/>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-semibold mb-1">Imagen URL</label>
+            <input type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} placeholder="URL o path de la imagen"
+              className="w-full border border-gray-300 rounded px-4 py-2"/>
+            {imagen && (
+              <img src={imagen} alt="Producto" className="w-32 h-32 object-cover mt-2 border border-gray-300 rounded"/>
             )}
           </div>
 

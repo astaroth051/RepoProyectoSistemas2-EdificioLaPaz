@@ -46,7 +46,8 @@ class CheckRole
             return $next($request);
         }
 
+        Log::warning('CheckRole middleware - Ruta actual: ' . $request->path());
         Log::warning('CheckRole middleware - Acceso denegado para usuario ID: ' . $user->id_user . ' con rol: ' . $user->rol);
-        abort(403, 'Acceso no autorizado.');
+        abort(403, 'Acceso no autorizado. Rol actual: "' . $userRole . '". Roles permitidos: "' . implode(', ', $normalizedRoles) . '"');
     }
 }

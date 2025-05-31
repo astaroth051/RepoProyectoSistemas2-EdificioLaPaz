@@ -18,15 +18,26 @@ class CopropietarioController extends Controller
             'id_user as id',
             'name as nombre',
             'lastname as apellido',
-            'email as correo'
+            'email as correo',
+            'estadoUsuario'
         )
         ->where('rol', 'copropietario')
-        //->where('estado', 'activo') 
         ->get();
 
         return Inertia::render('adminEdificio/GestionCopropietarios', [
             'copropietarios' => $copropietarios
         ]);
+    }
+
+    public function reactivarUsuario($id) {
+        $copropietario = User::find($id);
+        if (!$copropietario) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado']);
+        }
+        $copropietario->estadoUsuario = 1;
+        $copropietario->save();
+
+        return response()->json(['success' => true, 'message' => 'Usuario reactivado correctamente']);
     }
 
     public function indexAdminMicromarket()
@@ -140,10 +151,18 @@ class CopropietarioController extends Controller
             return response()->json(['success' => false, 'message' => 'Usuario no encontrado.']);
         }
 
-        $user->estado = 'inactivo'; // O `activo = false` según tu campo
+        $user->estado = 'inactivo'; 
         $user->save();
 
         return response()->json(['success' => true]);
     }
-    
+
+    public function desactivarUsuario($id)
+    {
+        $copropietario = User::findOrFail($id);
+        $copropietario->estadoUsuario = 0;
+        $copropietario->save();
+
+        return response()->json(['success' => true]);
+    }
 }

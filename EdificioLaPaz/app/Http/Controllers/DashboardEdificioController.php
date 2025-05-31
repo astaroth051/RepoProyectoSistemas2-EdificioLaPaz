@@ -9,7 +9,7 @@ class DashboardEdificioController extends Controller
 {
     public function index()
     {
-        $adminEdificio = User::where('rol', 'administrador')->first();
+        $adminEdificio = User::where('rol', 'dueño')->first();
 
         return Inertia::render('adminEdificio/DashboardEdificio', [
             'adminEdificio' => $adminEdificio,

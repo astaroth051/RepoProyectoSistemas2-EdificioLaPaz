@@ -13,18 +13,6 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-//Route::middleware(['auth', 'verified'])->group(function () {
-//    Route::get('dashboard', function () {
-//        return Inertia::render('dashboard');
-//    })->name('dashboard');
-//});
-
-/*Route::middleware(['auth', 'verified', 'checkRole:administrador,dueño'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});*/
-
 Route::get('/register-user', function () {
     return Inertia::render('auth/register-user');
 })->name('register-user');
@@ -36,7 +24,12 @@ Route::get('/logout-temp', function () {
     return redirect('/login');
 });
 
-
+Route::get('/reset-password/{token}', function ($token) {
+    return Inertia::render('auth/reset-password', [
+        'token' => $token,
+        'email' => request()->email,
+    ]);
+})->name('password.reset');
 // Ruta para mostrar la página de productos (vista)
 Route::middleware(['auth', 'checkRole:copropietario'])->group(function () {
     Route::get('/productos', [ProductoController::class, 'mostrarProductos'])->name('productos');

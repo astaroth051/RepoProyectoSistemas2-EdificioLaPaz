@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 
 interface Copropietario {
   id: number;
@@ -47,6 +47,9 @@ export default function GestionAdminMicromarket({ copropietarios: iniciales = []
     .sort((a, b) =>
       `${a.apellido} ${a.nombre}`.localeCompare(`${b.apellido} ${b.nombre}`)
     );
+  const handleLogout = () => {
+      router.post("/logout");
+    };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -61,6 +64,7 @@ export default function GestionAdminMicromarket({ copropietarios: iniciales = []
               <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
               <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietario</a>
             <a href="/cajas-ahorro-copropietario" className="hover:text-[#10B981] text-xl">📊 Cajas de Ahorro Copropietarios</a>
+            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full">🚪 Cerrar Sesión</button>
             </nav>
           </div>
         </aside>

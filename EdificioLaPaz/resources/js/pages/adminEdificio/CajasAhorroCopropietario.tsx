@@ -37,6 +37,10 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
     router.post(`/cajas-ahorro/desactivar/${usuario_id}`);
   }
 
+  const handleLogout = () => {
+      router.post("/logout");
+    };
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
       <Head title="Cajas de Ahorro Copropietarios" />
@@ -54,6 +58,7 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
               <a href="/dashboard-edificio" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
             <a href="/gestion-copropietarios" className="hover:text-[#10B981] text-xl">🤝 Gestión de Copropietarios</a>
             <a href="/administrador-micromarket" className="hover:text-[#10B981] text-xl">🏪 Administrador Micromarket</a>
+            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full">🚪 Cerrar Sesión</button>
           </nav>
         </div>
       </aside>
@@ -144,5 +149,4 @@ const CajasAhorroCopropietarios: React.FC<PageProps> = ({ usuarios, errors, succ
     </div>
   );
 };
-
 export default CajasAhorroCopropietarios;

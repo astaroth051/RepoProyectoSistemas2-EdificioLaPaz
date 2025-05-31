@@ -120,7 +120,9 @@ export default function PlanDePagos() {
         }
     };
 
-
+    const handleLogout = () => {
+            router.post('/logout');
+        };
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen font-sans bg-[#F6F6FA] text-white overflow-x-hidden">
@@ -135,6 +137,7 @@ export default function PlanDePagos() {
                         <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
                         <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
                         <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
+                        <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">🚪 Cerrar Sesión</button>
                     </nav>
                 </div>
             </aside>

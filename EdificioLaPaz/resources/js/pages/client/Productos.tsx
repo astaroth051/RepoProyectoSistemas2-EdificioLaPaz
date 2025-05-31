@@ -236,6 +236,9 @@ export default function Productos() {
             fecha: new Date().toISOString(),
         });
     };
+    const handleLogout = () => {
+            router.post('/logout');
+        };
 
     return (
         <div className="flex flex-col md:flex-row bg-white min-h-screen">
@@ -249,7 +252,7 @@ export default function Productos() {
                     <nav className="flex flex-col gap-4 text-sm font-semibold">
                         <a href="/dashboard-client" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
                         <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
-                        {/*<a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>*/}
+                        <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">🚪 Cerrar Sesión</button>
                     </nav>
                 </div>
             </aside>

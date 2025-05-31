@@ -6,6 +6,8 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AuthLayout from '@/layouts/auth-layout';
+
 
 interface ResetPasswordProps {
     token: string;
@@ -39,7 +41,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <Head title="Reset password" />
 
             <form onSubmit={submit}>
-                <div className="grid gap-6">
+                <div className="grid gap-6 text-black">
                     <div className="grid gap-2">
                         <Label htmlFor="email">Correo Electrónico</Label>
                         <Input
@@ -66,7 +68,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                             className="mt-1 block w-full"
                             autoFocus
                             onChange={(e) => setData('password', e.target.value)}
-                            placeholder="Password"
+                            placeholder="Contraseña nueva"
                         />
                         <InputError message={errors.password} />
                     </div>
@@ -81,7 +83,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                             value={data.password_confirmation}
                             className="mt-1 block w-full"
                             onChange={(e) => setData('password_confirmation', e.target.value)}
-                            placeholder="Confirm password"
+                            placeholder="Confirmar Contraseña"
                         />
                         <InputError message={errors.password_confirmation} className="mt-2" />
                     </div>
@@ -91,7 +93,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         Cambiar contraseña
                     </Button>
                 </div>
-            </div>
-        </>
+            </form>
+        </AuthLayout>
     );
 }

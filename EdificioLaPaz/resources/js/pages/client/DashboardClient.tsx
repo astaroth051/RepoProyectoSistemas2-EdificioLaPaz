@@ -115,7 +115,6 @@ const DashboardClient: React.FC = () => {
                     <h1 className="text-2xl font-bold text-center mb-8">Bienvenido</h1>
                     <nav className="flex flex-col gap-4 text-sm font-semibold items-center md:items-start">
                         <a href="/productos" className="hover:text-[#10B981] text-xl">📦 Productos</a>
-                        {/*<a href="/plan-de-pagos" className="hover:text-[#10B981] text-xl">📋 Plan de Pagos</a>*/}
                         <a href="/caja-de-ahorro" className="hover:text-[#10B981] text-xl">💰 Caja de Ahorro</a>
                         <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">🚪 Cerrar Sesión</button>
                     </nav>
@@ -154,7 +153,7 @@ const DashboardClient: React.FC = () => {
                     {/* Información Administrador */}
                     <div className="flex-1 bg-white border-2 border-[#10B981] rounded-xl p-4 sm:p-6 text-center">
                         <h2 className="text-lg sm:text-xl text-[#1E3A8A] font-semibold mb-4">
-                            Información Administrador
+                            Información Administrador Micromarket
                         </h2>
                         {admin ? (
                             <div className="text-black space-y-1">

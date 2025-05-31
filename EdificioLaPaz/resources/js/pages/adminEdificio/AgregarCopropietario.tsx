@@ -15,7 +15,7 @@ export default function AgregarCopropietario({ departamentos }: Props) {
     lastname: "",
     telefono: "",
     email: "",
-    password: "",
+    password: "12345678",
     rol: "copropietario",
     departamento_id: "",
   });
@@ -56,7 +56,7 @@ export default function AgregarCopropietario({ departamentos }: Props) {
             </div>
             <div>
               <label className="block font-semibold mb-1">Celular</label>
-              <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Ej: 78945612" className="w-full px-4 py-2 rounded border border-gray-300" required />
+              <input type="number" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Ej: 78945612" className="w-full px-4 py-2 rounded border border-gray-300" required />
             </div>
             <div>
               <label className="block font-semibold mb-1">Correo Electrónico</label>
