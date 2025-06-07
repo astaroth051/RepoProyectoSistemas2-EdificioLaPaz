@@ -9,19 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-     public function up()
+    public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Cambiar password_changed a boolean
-            $table->boolean('password_changed')->default(false)->change();
+            // Crear ambas columnas boolean
+            $table->boolean('password_changed')->default(false);
+            $table->boolean('estado')->default(true); // Por defecto activo
         });
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            // En caso de rollback, vuelve a string o al tipo original
-            $table->string('password_changed')->nullable()->change();
+            // Eliminar ambas columnas en caso de rollback
+            $table->dropColumn(['password_changed', 'estado']);
         });
     }
 };
