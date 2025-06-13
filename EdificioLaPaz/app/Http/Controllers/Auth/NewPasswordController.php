@@ -59,7 +59,7 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         if ($status == Password::PasswordReset) {
-            return to_route('login')->with('status', __($status));
+            return to_route('login')->with('status', '¡Contraseña cambiada exitosamente! Por favor, inicia sesión con tu nueva contraseña.');
         }
 
         throw ValidationException::withMessages([

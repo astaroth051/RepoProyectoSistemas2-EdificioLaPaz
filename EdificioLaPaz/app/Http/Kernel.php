@@ -4,7 +4,6 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Kernel extends HttpKernel
 {
@@ -29,7 +28,8 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
-        'auth' => Middleware::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         'checkRole' => \App\Http\Middleware\CheckRole::class,
+        'password.not.changed' => \App\Http\Middleware\RedirectIfPasswordNotChanged::class,
     ];
 }

@@ -11,7 +11,6 @@ use Inertia\Inertia;
 
 class CopropietarioController extends Controller
 {
-    
     public function index()
     {
         $copropietarios = User::select(
@@ -19,22 +18,23 @@ class CopropietarioController extends Controller
             'name as nombre',
             'lastname as apellido',
             'email as correo',
-            'estadoUsuario'
+            'estado'
         )
-        ->where('rol', 'copropietario')
-        ->get();
+            ->where('rol', 'copropietario')
+            ->get();
 
         return Inertia::render('adminEdificio/GestionCopropietarios', [
             'copropietarios' => $copropietarios
         ]);
     }
 
-    public function reactivarUsuario($id) {
-        $copropietario = User::find($id);
+    public function reactivarUsuario($id)
+    {
+        $copropietario = User::where('id_user', $id)->first();
         if (!$copropietario) {
             return response()->json(['success' => false, 'message' => 'Usuario no encontrado']);
         }
-        $copropietario->estadoUsuario = 1;
+        $copropietario->estado = 1;
         $copropietario->save();
 
         return response()->json(['success' => true, 'message' => 'Usuario reactivado correctamente']);
@@ -42,7 +42,12 @@ class CopropietarioController extends Controller
 
     public function indexAdminMicromarket()
     {
-        $copropietarios = User::select('id_user as id', 'name as nombre', 'lastname as apellido', 'rol')
+        $copropietarios = User::select(
+            'id_user as id',
+            'name as nombre',
+            'lastname as apellido',
+            'rol'
+        )
             ->whereIn('rol', ['copropietario', 'administrador'])
             ->get();
 
@@ -53,7 +58,7 @@ class CopropietarioController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('id_user', $id)->firstOrFail();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -71,7 +76,6 @@ class CopropietarioController extends Controller
 
     public function edit($id)
     {
-        // Si tu campo es 'id_user', usa where
         $user = User::where('id_user', $id)->firstOrFail();
         $departamentos = Departamento::select('id_departamentos', 'descripcion')->get();
 
@@ -91,10 +95,8 @@ class CopropietarioController extends Controller
 
     public function obtener()
     {
-        // Obtiene el usuario autenticado
         $user = Auth::user();
 
-        // Devuelve los datos del usuario autenticado
         return response()->json([
             'name' => $user->name,
             'lastname' => $user->lastname,
@@ -123,15 +125,16 @@ class CopropietarioController extends Controller
         $copropietario->email = $validated['email'];
         $copropietario->password = bcrypt($validated['password']);
         $copropietario->rol = $validated['rol'];
-        $copropietario->departamento_id = $validated['departamento_id']; 
+        $copropietario->departamento_id = $validated['departamento_id'];
+        $copropietario->estado = 1; // Establecer estado activo por defecto
         $copropietario->save();
 
         return redirect('/gestion-copropietarios');
     }
-    
+
     public function toggleRol($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('id_user', $id)->firstOrFail();
 
         if ($user->rol === 'copropietario') {
             $user->rol = 'administrador';
@@ -146,12 +149,12 @@ class CopropietarioController extends Controller
 
     public function desactivar($id)
     {
-        $user = User::find($id);
+        $user = User::where('id_user', $id)->first();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Usuario no encontrado.']);
         }
 
-        $user->estado = 'inactivo'; 
+        $user->estado = 0; // Cambiado de 'inactivo' a 0 para consistencia
         $user->save();
 
         return response()->json(['success' => true]);
@@ -159,8 +162,12 @@ class CopropietarioController extends Controller
 
     public function desactivarUsuario($id)
     {
-        $copropietario = User::findOrFail($id);
-        $copropietario->estadoUsuario = 0;
+        $copropietario = User::where('id_user', $id)->first();
+        if (!$copropietario) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado']);
+        }
+
+        $copropietario->estado = 0;
         $copropietario->save();
 
         return response()->json(['success' => true]);

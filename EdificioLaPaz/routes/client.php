@@ -8,9 +8,26 @@ use App\Http\Controllers\Client\AdminMicromarketController;
 use App\Http\Controllers\Client\EstadisticasClienteController;
 use App\Http\Controllers\Client\CajaAhorroController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\Auth\ForcedPasswordController;
+use App\Http\Middleware\RedirectIfPasswordNotChanged;
+
+// Rutas para cambio de contraseña (DEBE ir ANTES que las rutas protegidas)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cambiar-contrasena', [ForcedPasswordController::class, 'show'])->name('password.forzado.form');
+    Route::post('/cambiar-contrasena', [ForcedPasswordController::class, 'update'])->name('password.forzado.enviar');
+});
+
+// Ruta para cerrar sesión (también debe ir antes que las rutas protegidas)
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/login');
+})->name('logout');
 
 // Rutas protegidas para copropietario + chequeo de cambio de contraseña
-Route::middleware(['auth', 'checkRole:copropietario'])->group(function () {
+// Usando la clase directamente en lugar del alias
+Route::middleware(['auth', 'checkRole:copropietario', RedirectIfPasswordNotChanged::class])->group(function () {
     Route::get('/dashboard-client', function () {
         return Inertia::render('client/DashboardClient');
     })->name('dashboard-client');
@@ -28,11 +45,3 @@ Route::middleware(['auth', 'checkRole:copropietario'])->group(function () {
     Route::get('/caja-ahorro/movimientos', [CajaAhorroController::class, 'movimientos']);
     Route::post('/plan-de-pagos', [VentaController::class, 'mostrarVistaPlanDePagos']);
 });
-
-// Ruta para cerrar sesión
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/login');
-})->name('logout');

@@ -1,79 +1,85 @@
-import React, { useState, } from 'react';
-import { Head} from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia';
+import React from 'react';
+import { Head, useForm } from '@inertiajs/react';
+import { LoaderCircle } from 'lucide-react'; // Importar el ícono LoaderCircle
 
-const CambiarPassword = () => {
-  const [form, setForm] = useState({
-    password: '',
-    password_confirmation: '',
-  });
+import InputError from '@/components/input-error'; // Asumiendo que este componente ya existe y es como en la primera página
+import { Button } from '@/components/ui/button'; // Componente de botón de Shadcn UI
+import { Input } from '@/components/ui/input'; // Componente de input de Shadcn UI
+import { Label } from '@/components/ui/label'; // Componente de label de Shadcn UI
+import AuthLayout from '@/layouts/auth-layout'; // Asumiendo que este layout existe y es el mismo de la primera página
 
-  const [errors, setErrors] = useState<{ password?: string }>({});
+interface Props {
+    modo?: 'forzado' | 'recuperacion';
+}
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    Inertia.post('/cambiar-password', form, {
-      onError: (err) => {
-        setErrors(err);
-      },
+const CambiarPassword = ({ modo = 'recuperacion' }: Props) => {
+    const { data, setData, post, processing, errors } = useForm({
+        password: '',
+        password_confirmation: '',
     });
-  };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-    <Head title="Panel Cambio Contraseña" />
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Cambia tu contraseña</h2>
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">
-              Nueva contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
-              required
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
-          </div>
+        post('/cambiar-contrasena', {
+            onSuccess: () => {
+                console.log('Contraseña cambiada exitosamente');
+                // Inertia manejará automáticamente la redirección del controlador
+            },
+            onError: (errors) => {
+                console.log('Errores:', errors);
+            },
+        });
+    };
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password_confirmation">
-              Confirmar contraseña
-            </label>
-            <input
-              id="password_confirmation"
-              type="password"
-              name="password_confirmation"
-              value={form.password_confirmation}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
-              required
-            />
-          </div>
+    return (
+        <AuthLayout
+            title={modo === 'forzado' ? 'Primera vez: cambia tu contraseña' : 'Cambiar Contraseña'}
+            description="Por favor, ingrese su nueva contraseña."
+        >
+            <Head title="Cambiar Contraseña" />
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition duration-200"
-          >
-            Guardar contraseña
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+            <form onSubmit={handleSubmit}>
+                <div className="grid gap-6 text-black">
+                    <div className="grid gap-2">
+                        <Label htmlFor="password">Contraseña</Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            name="password"
+                            autoComplete="new-password"
+                            value={data.password}
+                            className="mt-1 block w-full"
+                            autoFocus
+                            onChange={(e) => setData('password', e.target.value)}
+                            placeholder="Nueva contraseña"
+                        />
+                        <InputError message={errors.password} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="password_confirmation">Confirmar contraseña</Label>
+                        <Input
+                            id="password_confirmation"
+                            type="password"
+                            name="password_confirmation"
+                            autoComplete="new-password"
+                            value={data.password_confirmation}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            placeholder="Confirmar Contraseña"
+                        />
+                        <InputError message={errors.password_confirmation} className="mt-2" />
+                    </div>
+
+                    <Button type="submit" className="mt-4 w-full" disabled={processing}>
+                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                        Cambiar contraseña
+                    </Button>
+                </div>
+            </form>
+        </AuthLayout>
+    );
 };
 
 export default CambiarPassword;
