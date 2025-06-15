@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Models\User;
 use App\Models\CajaAhorro;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class RecargaSaldoController extends Controller
 {
     public function index()
     {
-        $copropietarios = User::select('id_user as id', 'name as nombre', 'lastname as apellido')
-            ->where('rol', 'copropietario')
-            ->get();
-
         return Inertia::render('adminMicromarket/RecargaSaldo', [
-            'copropietarios' => $copropietarios
+            'copropietarios' => User::select('id_user as id', 'name as nombre', 'lastname as apellido')
+                ->where('rol', 'copropietario')
+                ->get(),
         ]);
     }
 
@@ -36,9 +34,12 @@ class RecargaSaldoController extends Controller
             CajaAhorro::create([
                 'usuario_id' => $request->copropietario_id,
                 'saldo' => $request->saldo,
-                'fecha' => now(),
+                // 'seguro' y otros campos pueden ir aquí si son obligatorios
+                'estado' => 1, // o el valor por defecto que uses
+                'fecha_desactivacion' => null,
             ]);
         }
-        return redirect()->back()->with('success', 'Saldo recargado exitosamente.');
+
+        return redirect()->route('recarga-saldo')->with('success', '¡Saldo recargado con éxito!');
     }
 }

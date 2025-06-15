@@ -28,7 +28,7 @@ class ProductoMicromarket extends Model
         'precio',
         'stock',
         'imagen',
-        'categoria',
+        'id_categoria',
         'estado',
         'fecha_restock',
     ];

@@ -20,7 +20,6 @@ interface ItemCarrito {
 }
 
 
-
 export default function Productos() {
     // 📦 Obtener props desde Inertia
     const { carrito: carritoProp, total: totalProp, codigo_ficha, fecha } = usePage().props as {

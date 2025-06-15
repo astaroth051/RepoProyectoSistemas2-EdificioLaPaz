@@ -1,5 +1,5 @@
-import { Head, router} from "@inertiajs/react";
-import { useState } from "react";
+import { Head, router } from "@inertiajs/react";
+import { useState, useEffect } from "react";
 import { usePage } from "@inertiajs/react";
 import type { PageProps as InertiaPageProps } from "@inertiajs/core";
 
@@ -7,7 +7,7 @@ interface Copropietario {
   id: number;
   nombre: string;
   apellido: string;
-  numeroCuenta: string;
+  telefono: string;
 }
 
 interface Flash {
@@ -25,9 +25,21 @@ interface Props {
 export default function RecargaSaldo({ copropietarios }: Props) {
   const { props } = usePage<PageProps>();
   const success = props.flash?.success;
+
   const [saldo, setSaldo] = useState("");
   const [filtro, setFiltro] = useState("");
   const [copropietarioSeleccionado, setCopropietarioSeleccionado] = useState<Copropietario | null>(null);
+
+  // Estado local para mostrar mensaje por unos segundos
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true);
+      const timeout = setTimeout(() => setShowSuccess(false), 4000);
+      return () => clearTimeout(timeout);
+    }
+  }, [success]);
 
   const copropietariosFiltrados = copropietarios.filter(
     (copropietario) =>
@@ -55,7 +67,7 @@ export default function RecargaSaldo({ copropietarios }: Props) {
           saldo: parseFloat(saldo),
         },
         {
-          preserveScroll: true, // opcional
+          preserveScroll: true,
           onSuccess: () => {
             setSaldo("");
             setCopropietarioSeleccionado(null);
@@ -76,12 +88,24 @@ export default function RecargaSaldo({ copropietarios }: Props) {
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-[#1E3A8A] text-white p-6 flex flex-col justify-between">
         <div>
-          <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/107/107831.png"
+            alt="Logo"
+            className="w-16 h-16 mx-auto mb-4"
+          />
           <h1 className="text-2xl font-bold text-center mb-8">Admin MicroMarket La Paz</h1>
           <nav className="flex flex-col gap-4 text-sm font-semibold text-center md:text-left">
-            <a href="/dashboard-micromarket" className="hover:text-[#10B981] text-xl">🏠 Inicio</a>
-            <a href="/productos-micromarket" className="hover:text-[#10B981] text-xl">📦 Productos</a>
-            <button onClick={handleLogout} className="hover:text-[#10B981] text-xl text-left w-full ">
+            <a href="/dashboard-micromarket" className="hover:text-[#10B981] text-xl">
+              🏠 Inicio
+            </a>
+            <a href="/productos-micromarket" className="hover:text-[#10B981] text-xl">
+              📦 Productos
+            </a>
+            <button
+              onClick={handleLogout}
+              className="hover:text-[#10B981] text-xl text-left w-full cursor-pointer"
+              type="button"
+            >
               🚪 Cerrar Sesión
             </button>
           </nav>
@@ -91,16 +115,26 @@ export default function RecargaSaldo({ copropietarios }: Props) {
       {/* Contenido principal */}
       <main className="flex-1 p-4 md:p-6 max-w-5xl mx-auto bg-[#1E3A8A] border-2 border-[#10B981] text-white rounded-tl-2xl overflow-auto">
         <h2 className="text-2xl font-bold text-center mb-8">💳 Recarga de Saldo</h2>
-        {success && (
+
+        {/* Mostrar mensaje solo si showSuccess está activo */}
+        {showSuccess && success && (
           <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
             {success}
           </div>
         )}
+
         <div className="mb-4">
           <label htmlFor="filtroCopropietarios" className="block font-semibold mb-1">
             Buscar Copropietario
           </label>
-          <input type="text" id="filtroCopropietarios" placeholder="Buscar por nombre o apellido" value={filtro} onChange={(e) => setFiltro(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2 text-black bg-white"/>
+          <input
+            type="text"
+            id="filtroCopropietarios"
+            placeholder="Buscar por nombre o apellido"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="w-full border border-gray-300 rounded px-4 py-2 text-black bg-white"
+          />
         </div>
 
         <div className="mb-4 bg-white text-blue-900 rounded-xl shadow-md overflow-y-auto max-h-48">
@@ -123,32 +157,66 @@ export default function RecargaSaldo({ copropietarios }: Props) {
         </div>
 
         {copropietarioSeleccionado && (
-          <form onSubmit={handleSubmit} className="bg-white text-blue-900 p-6 rounded-xl shadow-md space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white text-blue-900 p-6 rounded-xl shadow-md space-y-6 relative z-10"
+          >
             <div>
               <label className="block font-semibold mb-1">Nombre del Copropietario</label>
-              <input type="text" value={copropietarioSeleccionado.nombre} disabled className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"/>
+              <input
+                type="text"
+                value={copropietarioSeleccionado.nombre}
+                disabled
+                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
+              />
             </div>
 
             <div>
               <label className="block font-semibold mb-1">Apellido del Copropietario</label>
-              <input type="text" value={copropietarioSeleccionado.apellido} disabled className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"/>
+              <input
+                type="text"
+                value={copropietarioSeleccionado.apellido}
+                disabled
+                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
+              />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Número de Cuenta</label>
-              <input type="text" value={copropietarioSeleccionado.numeroCuenta} disabled className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"/>
+              <label className="block font-semibold mb-1">Teléfono</label>
+              <input
+                type="text"
+                value={copropietarioSeleccionado.telefono || ""}
+                disabled
+                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
+              />
             </div>
 
             <div>
               <label className="block font-semibold mb-1">Monto a Recargar (Bs.)</label>
-              <input type="number" value={saldo} onChange={(e) => setSaldo(e.target.value)} placeholder="Ej. 50" required className="w-full border border-gray-300 rounded px-4 py-2"/>
+              <input
+                type="number"
+                value={saldo}
+                onChange={(e) => setSaldo(e.target.value)}
+                placeholder="Ej. 50"
+                required
+                className="w-full border border-gray-300 rounded px-4 py-2"
+                min="1"
+                step="0.01"
+              />
             </div>
 
             <div className="flex justify-end gap-4 pt-4">
-              <button type="button" onClick={handleCancelarRecarga} className="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded shadow-md">
+              <button
+                type="button"
+                onClick={handleCancelarRecarga}
+                className="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded shadow-md cursor-pointer"
+              >
                 Cancelar
               </button>
-              <button type="submit" className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-6 py-2 rounded shadow-md">
+              <button
+                type="submit"
+                className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-6 py-2 rounded shadow-md cursor-pointer"
+              >
                 Recargar
               </button>
             </div>

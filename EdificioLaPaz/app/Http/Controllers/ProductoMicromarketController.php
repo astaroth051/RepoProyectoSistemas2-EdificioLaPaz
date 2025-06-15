@@ -6,9 +6,18 @@ use App\Models\ProductoMicromarket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use App\Models\Categoria; 
 
 class ProductoMicromarketController extends Controller
 {
+    public function formAgregarProducto()
+    {
+        $categorias = Categoria::all();
+
+        return Inertia::render('adminMicromarket/AgregarProductos', [
+            'categorias' => $categorias,
+        ]);
+    }
     public function index()
     {
         $productos = ProductoMicromarket::select(
@@ -18,7 +27,7 @@ class ProductoMicromarketController extends Controller
             'precio',
             'stock',
             'imagen',
-            'categoria',
+            'id_categoria',
             'estado',
             'fecha_restock'
         )
@@ -38,7 +47,7 @@ class ProductoMicromarketController extends Controller
             'precio',
             'stock',
             'imagen',
-            'categoria',
+            'id_categoria',
             'estado',
             'fecha_restock'
         )->where('id_productos', $id)->firstOrFail();
@@ -55,7 +64,7 @@ class ProductoMicromarketController extends Controller
             'precio' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'imagen' => 'nullable|string|max:255',
-            'categoria' => 'required|string|max:100',
+            'id_categoria' => 'required|integer',
             'estado' => 'nullable|integer|in:0,1',
             'fecha_restock' => 'nullable|date',
         ]);
@@ -65,27 +74,29 @@ class ProductoMicromarketController extends Controller
 
         return redirect()->route('productos-micromarket');
     }
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'categoria' => 'required|string|max:255', 
+            'id_categoria' => 'required|integer',
             'precio' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'imagen' => 'required|string', // URL
+            'imagen' => 'required|string',
         ]);
 
         ProductoMicromarket::create([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
-            'categoria' => $request->categoria,
+            'id_categoria' => $request->id_categoria,
             'precio' => $request->precio,
             'stock' => $request->stock,
             'imagen' => $request->imagen,
+            'estado' => 1, 
+            'fecha_restock' => null,
         ]);
 
-        return redirect()->route('productos-micromarket.index')->with('success', 'Producto agregado correctamente.');
+        return redirect()->route('productos-micromarket')->with('success', 'Producto agregado correctamente.');
     }
     public function edit($id)
     {
@@ -96,13 +107,20 @@ class ProductoMicromarketController extends Controller
             'precio',
             'stock',
             'imagen',
-            'categoria',
+            'id_categoria',
             'estado',
             'fecha_restock'
         )->where('id_productos', $id)->firstOrFail();
 
+        // Obtener categorías activas (ajusta según tu esquema)
+        $categorias = DB::table('categorias')
+            ->select('id_categoria as id', 'nombre')
+            ->where('estado', 1) // si tienes estado para activar/inactivar categorías
+            ->get();
+
         return Inertia::render('adminMicromarket/EditarProductos', [
             'producto' => $producto,
+            'categorias' => $categorias,
         ]);
     }
     public function destroy($id)

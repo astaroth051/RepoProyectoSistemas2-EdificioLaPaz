@@ -1,13 +1,28 @@
 import { Head, Link, router } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function AgregarProductos() {
+interface Categoria {
+  id_categoria: number;
+  nombre: string;
+  estado: number;
+  created_at: string;
+  updated_at: string;
+}
+
+
+interface Props {
+  categorias: Categoria[];
+}
+
+export default function AgregarProductos({ categorias }: Props) {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
-  const [imagen, setImagen] = useState(""); 
+  const [imagen, setImagen] = useState("");
   const [categoria, setCategoria] = useState("");
+
+  console.log("Categorias:", categorias); // Para revisar ids
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,13 +31,17 @@ export default function AgregarProductos() {
       alert("Debes ingresar la URL de la imagen.");
       return;
     }
+    if (!categoria) {
+      alert("Debes seleccionar una categoría.");
+      return;
+    }
 
     router.post("/productos-micromarket", {
       nombre,
       descripcion,
-      categoria,
-      precio,
-      stock,
+      id_categoria: Number(categoria),
+      precio: Number(precio),
+      stock: Number(stock),
       imagen,
     });
   };
@@ -37,28 +56,40 @@ export default function AgregarProductos() {
         <form onSubmit={handleSubmit} className="bg-white text-blue-900 p-6 rounded-xl shadow-md space-y-6">
           <div>
             <label className="block font-semibold mb-1">Nombre del Producto</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
+              className="w-full border border-gray-300 rounded px-4 py-2" required/>
           </div>
 
           <div>
             <label className="block font-semibold mb-1">Descripción</label>
-            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
+              className="w-full border border-gray-300 rounded px-4 py-2" required/>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block font-semibold mb-1">Precio (Bs.)</label>
-              <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2"
-                required step="0.01" min="0"/>
+              <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2" required step="0.01" min="0"/>
             </div>
+
             <div>
               <label className="block font-semibold mb-1">Categoría</label>
-              <input type="text" value={categoria} onChange={(e) => setCategoria(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2" required/>
+              <select value={categoria} onChange={(e) => setCategoria(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2" required>
+                <option value="">Seleccione una categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id_categoria} value={cat.id_categoria}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
+
             <div>
               <label className="block font-semibold mb-1">Cantidad en stock</label>
-              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2"
-                required min="0"/>
+              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)}
+                className="w-full border border-gray-300 rounded px-4 py-2" required min="0"/>
             </div>
           </div>
 
