@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CompraRealizada;
+use App\Models\Block;
 
 class VentaController extends Controller
 {
@@ -163,8 +164,42 @@ class VentaController extends Controller
                 'productos' => $request->productos
             ]));
 
+            //registro de ventas en block
+            $transaction_data = array_map(function ($item) {
+                return [
+                    'id' => $item['producto_id'],
+                    'cantidad' => $item['cantidad'],
+                    'subtotal' => $item['subtotal'], 
+                    'nombre' => $item['nombre'], 
+                ]; 
+            }, $request->productos);
 
+            $previousBlock = Block::getLastBlock();
+            $previous_hash = $previousBlock ? $previousBlock->current_hash : str_repeat('0', 64);
+            $timestamp = Carbon::now()->toDateTimeString();
 
+            $current_hash = Block::generateHash($previous_hash, $transaction_data, $timestamp);
+
+            $comprador = Auth::user()->name . ' ' . Auth::user()->lastname;
+
+            // Creamos el nuevo bloque
+            $block = Block::create([
+                'previous_hash' => $previous_hash,
+                'current_hash' => $current_hash,
+                'venta_id' => $venta->id_ventas,
+                'comprador' => $comprador,
+                'productos' => $transaction_data,
+                'total' => $request->total,
+                'fecha' => $venta->created_at,
+                'timestamp' => $timestamp,
+                'codigo_ficha'  => $request->codigo_ficha,
+            ]);
+
+            if ($block) {
+                Log::info("Block guardado.", ['block' => $block->id]);
+            } else {
+                Log::error("Error al guardar el block.");
+            }
 
             return response()->json(['message' => 'Compra y plan de pagos registrados con éxito.'], 201);
         } catch (\Exception $e) {
