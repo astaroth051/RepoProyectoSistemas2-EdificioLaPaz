@@ -124,7 +124,7 @@ const DashboardClient: React.FC = () => {
             {/* Main Content */}
             <main className="flex-1 p-4 sm:p-6 md:p-8">
                 <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A8A] text-center mb-6">
-                    Micromarket Edificio La Paz
+                    Copropietario Edificio La Paz
                 </h1>
 
                 <div className="flex flex-col md:flex-row gap-6 mb-6">

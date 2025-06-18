@@ -1,6 +1,16 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
+import React from 'react';
 
-export default function RegisterUser() {
+interface AdminEdificio {
+  name: string;
+  lastname: string;
+  email: string;
+  telefono: string;
+}
+
+const RegisterUser = () => {
+const { admin } = usePage().props as unknown as { admin: AdminEdificio };
+
     return (
         <>
             <Head title="Registro de Usuario - Micromarket La Paz">
@@ -16,23 +26,31 @@ export default function RegisterUser() {
                             Para registrarte en el sistema, por favor contacta al administrador del edificio. Él se encargará de crear tu cuenta.
                         </p>
 
-                        <div className="space-y-2 text-sm text-gray-700">
-                            <p><strong>Administrador:</strong> Juan Pérez</p>
-                            <p><strong>Teléfono:</strong> +591 71234567</p>
-                            <p><strong>Email:</strong> administrador@edificio.com</p>
-                            <p><strong>Horario de atención:</strong> Lunes a Viernes, 08:00 – 17:00</p>
+                         <div className="flex-1 bg-white border-2 border-[#10B981] rounded-xl p-4 sm:p-6 text-center">
+                            <h2 className="text-lg sm:text-xl text-[#1E3A8A] font-semibold mb-4">
+                                Información Administrador Del Edificio
+                            </h2>
+                            <div>
+                                <p><strong>Nombre:</strong> {admin.name}</p>
+                                <p><strong>Apellido:</strong> {admin.lastname}</p>
+                                <p><strong>Teléfono:</strong> {admin.telefono}</p>
+                                <p><strong>Correo:</strong> {admin.email}</p>
+                            </div>
+                        </div>
+                         <div className="mt-6">
+                            <Link href="/" className="inline-block px-6 py-2 text-white bg-[#10B981] hover:bg-[#059669] rounded-lg shadow transition duration-200">
+                                Volver al inicio
+                            </Link>
                         </div>
                     </div>
-
                     <div className="relative w-full lg:w-[438px] bg-gradient-to-tr from-teal-200 via-green-200 to-blue-100 rounded-t-lg lg:rounded-tr-lg lg:rounded-l-none shadow-inner">
-                        <img
-                            src="/images/LogoMarket.png"
-                            alt="Micromarket"
-                            className="w-full h-full object-cover rounded-t-lg lg:rounded-tr-lg"
-                        />
+                        <img src="/images/LogoMarket.png" alt="Micromarket"
+                            className="w-full h-full object-cover rounded-t-lg lg:rounded-tr-lg"/>
                     </div>
                 </main>
             </div>
         </>
     );
 }
+
+export default RegisterUser;

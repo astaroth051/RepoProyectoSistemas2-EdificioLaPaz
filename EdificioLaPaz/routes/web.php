@@ -6,16 +6,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\VentaController;
-
+use App\Http\Controllers\RegisterUserController;
 
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::get('/register-user', function () {
-    return Inertia::render('auth/register-user');
-})->name('register-user');
+Route::get('/register-user', [RegisterUserController::class, 'mostrarVistaConAdmin'])->name('register-user');
 
 Route::get('/logout-temp', function () {
     Auth::logout();
