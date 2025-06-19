@@ -137,8 +137,15 @@ class CopropietarioController extends Controller
         $user = User::where('id_user', $id)->firstOrFail();
 
         if ($user->rol === 'copropietario') {
+            // Si queremos activar como administrador, primero desactivamos todos los demás administradores
+            User::where('rol', 'administrador')
+                ->whereIn('rol', ['copropietario', 'administrador'])
+                ->update(['rol' => 'copropietario']);
+
+            // Luego activamos al usuario seleccionado
             $user->rol = 'administrador';
         } else {
+            // Si queremos desactivar al administrador actual
             $user->rol = 'copropietario';
         }
 
