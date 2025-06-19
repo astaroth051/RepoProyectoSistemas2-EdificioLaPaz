@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\CajaAhorroController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\Auth\ForcedPasswordController;
 use App\Http\Middleware\RedirectIfPasswordNotChanged;
+use App\Http\Controllers\ProductoController;
 
 // Rutas para cambio de contraseña (DEBE ir ANTES que las rutas protegidas)
 Route::middleware(['auth'])->group(function () {
@@ -44,5 +45,5 @@ Route::middleware(['auth', 'checkRole:copropietario', RedirectIfPasswordNotChang
     Route::get('/caja-ahorro/obtener', [CajaAhorroController::class, 'datos']);
     Route::get('/caja-ahorro/movimientos', [CajaAhorroController::class, 'movimientos']);
     Route::post('/plan-de-pagos', [VentaController::class, 'mostrarVistaPlanDePagos']);
-
+    Route::get('/api/categorias', [ProductoController::class, 'categorias']);
 });

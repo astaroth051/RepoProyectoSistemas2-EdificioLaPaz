@@ -9,7 +9,12 @@ class Producto extends Model
     protected $table = 'productos';
     protected $primaryKey = 'id_productos';
 
-    protected $fillable = ['nombre', 'categoria', 'estado', 'precio', 'cantidad', 'imagen'];
+    protected $fillable = ['nombre', 'id_categoria', 'estado', 'precio', 'cantidad', 'imagen'];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria');
+    }
 
     public function detallesVenta()
     {

@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Log;
+use App\Models\Categoria;
+
 
 class ProductoController extends Controller
 {
@@ -12,22 +15,37 @@ class ProductoController extends Controller
     public function index(Request $request)
     {
         try {
-            $busqueda = $request->query('busqueda'); // Si tienes búsqueda, la obtienes
+            $busqueda = $request->query('busqueda');
+            $categoriaNombre = $request->query('categoria');
 
-            // Consultar productos con estado = 1 (activos)
-            $productos = Producto::when($busqueda, function ($query, $busqueda) {
-                return $query->where('nombre', 'like', "%{$busqueda}%")
-                    ->orWhere('categoria', 'like', "%{$busqueda}%");
-            })
-                ->where('estado', 1) // Solo los productos activos
-                ->get();
+            $productos = Producto::with('categoria')
+                ->where('estado', 1)
+                ->when($busqueda, function ($query, $busqueda) {
+                    return $query->where('nombre', 'like', "%{$busqueda}%");
+                })
+                ->when($categoriaNombre, function ($query, $categoriaNombre) {
+                    return $query->whereHas('categoria', function ($q) use ($categoriaNombre) {
+                        $q->where('nombre', 'like', "%{$categoriaNombre}%");
+                    });
+                })
+                ->get()
+                ->map(function ($producto) {
+                    return [
+                        'id_productos' => $producto->id_productos,
+                        'nombre' => $producto->nombre,
+                        'precio' => $producto->precio,
+                        'stock' => $producto->stock,
+                        'imagen' => $producto->imagen,
+                        'categoria' => $producto->categoria->nombre ?? 'Sin categoría',
+                    ];
+                });
 
-            // Devolver los productos en formato JSON
             return response()->json($productos);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener productos: ' . $e->getMessage()], 500);
         }
     }
+
 
     // Mostrar vista Inertia
     public function mostrarProductos(Request $request)
@@ -47,5 +65,10 @@ class ProductoController extends Controller
             'total' => $request->input('total', 0),
             'codigo_ficha' => $request->input('codigo_ficha', '')
         ]);
+    }
+
+    public function categorias()
+    {
+        return response()->json(Categoria::select('id_categoria', 'nombre')->get());
     }
 }

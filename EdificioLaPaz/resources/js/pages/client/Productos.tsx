@@ -65,6 +65,8 @@ export default function Productos() {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
+    const [categorias, setCategorias] = useState<{ id_categoria: number; nombre: string }[]>([]);
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
 
     // 🧾 Código de ficha (si se trajo desde PlanDePagos lo usamos, si no, generamos uno)
     const [codigoFicha, setCodigoFicha] = useState(() =>
@@ -76,7 +78,10 @@ export default function Productos() {
             setCargando(true);
             setError("");
             const response = await axios.get('/api/productos', {
-                params: { busqueda: terminoBusqueda }
+                params: {
+                    busqueda: terminoBusqueda,
+                    categoria: categoriaSeleccionada
+                }
             });
 
             const productosNormalizados = response.data.map((prod: any) => ({
@@ -102,6 +107,13 @@ export default function Productos() {
     useEffect(() => {
         obtenerProductos(busqueda);
     }, [busqueda]);
+
+    useEffect(() => {
+        fetch('/api/categorias', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => setCategorias(data))
+            .catch(err => console.error("Error al cargar categorías:", err));
+    }, []);
 
     // Normalizar carrito cuando llegan los productos desde el backend
     useEffect(() => {
@@ -236,8 +248,8 @@ export default function Productos() {
         });
     };
     const handleLogout = () => {
-            router.post('/logout');
-        };
+        router.post('/logout');
+    };
 
     return (
         <div className="flex flex-col md:flex-row bg-white min-h-screen">
@@ -266,7 +278,7 @@ export default function Productos() {
 
                     {/* Buscador */}
                     <div className="flex justify-center mb-10">
-                        <div className="flex gap-4 items-center bg-white rounded-full px-6 py-3 shadow-md w-full sm:w-1/2 md:w-1/3">
+                        <div className="flex gap-4 items-center bg-white rounded-full px-6 py-3 shadow-md w-full sm:w-2/3 md:w-1/2">
                             <input
                                 type="text"
                                 value={busqueda}
@@ -281,6 +293,19 @@ export default function Productos() {
                             >
                                 Buscar
                             </button>
+                            <select
+                                value={categoriaSeleccionada}
+                                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+                                className="ml-2 border border-gray-300 rounded-full px-4 py-2 text-black bg-white focus:outline-none"
+                                style={{ minWidth: 170 }}
+                            >
+                                <option value="">Todas las categorías</option>
+                                {categorias.map((cat) => (
+                                    <option key={cat.id_categoria} value={cat.nombre}>
+                                        {cat.nombre}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

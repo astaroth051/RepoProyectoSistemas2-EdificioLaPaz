@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Categoria extends Model
 {
-    use HasFactory;
-    protected $fillable = ['nombre'];
+    protected $table = 'categorias';
+    protected $primaryKey = 'id_categoria';
 
-    // Si no usas timestamps (created_at, updated_at), desactívalos:
-    // public $timestamps = false;
+    protected $fillable = ['nombre', 'estado'];
+
+    public function productos()
+    {
+        return $this->hasMany(Producto::class, 'id_categoria');
+    }
 }
