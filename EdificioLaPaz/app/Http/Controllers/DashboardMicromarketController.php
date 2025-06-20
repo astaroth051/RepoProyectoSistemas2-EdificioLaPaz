@@ -15,7 +15,7 @@ class DashboardMicromarketController extends Controller
     public function index()
     {
         $totalProductos = Producto::count();
-        $productosBajoStock = Producto::where('stock', '<', 10)->count();
+        $productosBajoStock = Producto::where('stock', '<', 5)->count();
 
         // Obtener el mes actual
         $mesActual = Carbon::now()->month;

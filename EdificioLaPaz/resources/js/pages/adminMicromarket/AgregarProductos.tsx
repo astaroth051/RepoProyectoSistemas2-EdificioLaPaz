@@ -9,7 +9,6 @@ interface Categoria {
   updated_at: string;
 }
 
-
 interface Props {
   categorias: Categoria[];
 }
@@ -21,28 +20,203 @@ export default function AgregarProductos({ categorias }: Props) {
   const [stock, setStock] = useState("");
   const [imagen, setImagen] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   console.log("Categorias:", categorias); // Para revisar ids
+
+  // Función para capitalizar texto
+  const capitalizarTexto = (texto: string): string => {
+    return texto
+      .toLowerCase()
+      .split(' ')
+      .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+      .join(' ');
+  };
+
+  // Función para capitalizar la primera letra mientras se escribe
+  const capitalizarPrimeraLetra = (texto: string): string => {
+    if (!texto) return texto;
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  };
+
+  // Función para validar URL de imagen
+  const validarUrlImagen = (url: string): boolean => {
+    const regex = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i;
+    return regex.test(url);
+  };
+
+  // Función para validar un campo específico
+  const validarCampo = (campo: string, valor: string): string => {
+    switch (campo) {
+      case 'nombre':
+        if (!valor.trim()) return 'El nombre es obligatorio';
+        if (valor.trim().length < 2) return 'El nombre debe tener al menos 2 caracteres';
+        // Permitir letras, números, espacios y algunos caracteres especiales comunes en nombres de productos
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-\.]+$/.test(valor.trim())) return 'El nombre solo puede contener letras, números, espacios, guiones y puntos';
+        return '';
+
+      case 'descripcion':
+        if (!valor.trim()) return 'La descripción es obligatoria';
+        if (valor.trim().length < 10) return 'La descripción debe tener al menos 10 caracteres';
+        if (valor.trim().length > 200) return 'La descripción no puede tener más de 200 caracteres';
+        // Permitir letras, números, espacios y caracteres especiales comunes en descripciones
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-\.\,\;\:\!\¡\?\¿\(\)]+$/.test(valor.trim())) return 'La descripción contiene caracteres no permitidos';
+        return '';
+
+      case 'precio':
+        const precioNum = parseFloat(valor);
+        if (!valor) return 'El precio es obligatorio';
+        if (isNaN(precioNum)) return 'El precio debe ser un número válido';
+        if (precioNum < 1) return 'El precio debe ser mayor o igual a 1 Bs';
+        if (precioNum > 10000) return 'El precio no puede ser mayor a 10,000 Bs';
+        return '';
+
+      case 'stock':
+        const stockNum = parseInt(valor);
+        if (!valor) return 'El stock es obligatorio';
+        if (isNaN(stockNum)) return 'El stock debe ser un número válido';
+        if (stockNum < 5) return 'El stock debe ser mayor o igual a 5';
+        if (stockNum > 200) return 'El stock no puede ser mayor a 200 unidades';
+        return '';
+
+      case 'imagen':
+        if (!valor.trim()) return 'La URL de la imagen es obligatoria';
+        if (!validarUrlImagen(valor.trim())) return 'Debe ser una URL válida de imagen (jpg, jpeg, png, gif, webp)';
+        return '';
+
+      case 'categoria':
+        if (!valor) return 'Debe seleccionar una categoría';
+        return '';
+
+      default:
+        return '';
+    }
+  };
+
+  // Función para validar todos los campos
+  const validarFormulario = (): boolean => {
+    const nuevosErrores: Record<string, string> = {};
+
+    nuevosErrores.nombre = validarCampo('nombre', nombre);
+    nuevosErrores.descripcion = validarCampo('descripcion', descripcion);
+    nuevosErrores.precio = validarCampo('precio', precio);
+    nuevosErrores.stock = validarCampo('stock', stock);
+    nuevosErrores.imagen = validarCampo('imagen', imagen);
+    nuevosErrores.categoria = validarCampo('categoria', categoria);
+
+    // Filtrar errores vacíos
+    const erroresFiltrados = Object.fromEntries(
+      Object.entries(nuevosErrores).filter(([, valor]) => valor !== '')
+    );
+
+    setErrors(erroresFiltrados);
+    return Object.keys(erroresFiltrados).length === 0;
+  };
+
+  // Manejadores de cambio con validación en tiempo real
+  const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let valor = e.target.value;
+
+    // Capitalizar la primera letra automáticamente
+    valor = capitalizarPrimeraLetra(valor);
+    setNombre(valor);
+
+    // Limpiar error si existe
+    if (errors.nombre) {
+      const nuevoError = validarCampo('nombre', valor);
+      setErrors(prev => ({
+        ...prev,
+        nombre: nuevoError
+      }));
+    }
+  };
+
+  const handleDescripcionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    let valor = e.target.value;
+
+    // Capitalizar la primera letra automáticamente
+    valor = capitalizarPrimeraLetra(valor);
+    setDescripcion(valor);
+
+    if (errors.descripcion) {
+      const nuevoError = validarCampo('descripcion', valor);
+      setErrors(prev => ({
+        ...prev,
+        descripcion: nuevoError
+      }));
+    }
+  };
+
+  const handlePrecioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    setPrecio(valor);
+
+    if (errors.precio) {
+      const nuevoError = validarCampo('precio', valor);
+      setErrors(prev => ({
+        ...prev,
+        precio: nuevoError
+      }));
+    }
+  };
+
+  const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    setStock(valor);
+
+    if (errors.stock) {
+      const nuevoError = validarCampo('stock', valor);
+      setErrors(prev => ({
+        ...prev,
+        stock: nuevoError
+      }));
+    }
+  };
+
+  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    setImagen(valor);
+
+    if (errors.imagen) {
+      const nuevoError = validarCampo('imagen', valor);
+      setErrors(prev => ({
+        ...prev,
+        imagen: nuevoError
+      }));
+    }
+  };
+
+  const handleCategoriaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const valor = e.target.value;
+    setCategoria(valor);
+
+    if (errors.categoria) {
+      const nuevoError = validarCampo('categoria', valor);
+      setErrors(prev => ({
+        ...prev,
+        categoria: nuevoError
+      }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!imagen.trim()) {
-      alert("Debes ingresar la URL de la imagen.");
-      return;
-    }
-    if (!categoria) {
-      alert("Debes seleccionar una categoría.");
+    if (!validarFormulario()) {
       return;
     }
 
+    // Capitalizar nombre y descripción antes de enviar
+    const nombreCapitalizado = capitalizarTexto(nombre.trim());
+    const descripcionCapitalizada = capitalizarTexto(descripcion.trim());
+
     router.post("/productos-micromarket", {
-      nombre,
-      descripcion,
+      nombre: nombreCapitalizado,
+      descripcion: descripcionCapitalizada,
       id_categoria: Number(categoria),
       precio: Number(precio),
       stock: Number(stock),
-      imagen,
+      imagen: imagen.trim(),
     });
   };
 
@@ -56,27 +230,70 @@ export default function AgregarProductos({ categorias }: Props) {
         <form onSubmit={handleSubmit} className="bg-white text-blue-900 p-6 rounded-xl shadow-md space-y-6">
           <div>
             <label className="block font-semibold mb-1">Nombre del Producto</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
-              className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <input
+              type="text"
+              value={nombre}
+              onChange={handleNombreChange}
+              className={`w-full border rounded px-4 py-2 ${
+                errors.nombre ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+              placeholder="Ej. Coca Cola 2 litros"
+            />
+            {errors.nombre && (
+              <p className="text-red-500 text-sm mt-1">{errors.nombre}</p>
+            )}
           </div>
 
           <div>
             <label className="block font-semibold mb-1">Descripción</label>
-            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
-              className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <textarea
+              value={descripcion}
+              onChange={handleDescripcionChange}
+              className={`w-full border rounded px-4 py-2 h-24 resize-none ${
+                errors.descripcion ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+              placeholder="Describe el producto..."
+              maxLength={500}
+            />
+            <div className="flex justify-between items-center mt-1">
+              {errors.descripcion && (
+                <p className="text-red-500 text-sm">{errors.descripcion}</p>
+              )}
+              <p className="text-gray-500 text-sm ml-auto">
+                {descripcion.length}/200 caracteres
+              </p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block font-semibold mb-1">Precio (Bs.)</label>
-              <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)}
-                className="w-full border border-gray-300 rounded px-4 py-2" required step="0.01" min="0"/>
+              <input
+                type="number"
+                value={precio}
+                onChange={handlePrecioChange}
+                className={`w-full border rounded px-4 py-2 ${
+                  errors.precio ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+                step="0.01"
+                min="1"
+                max="10000"
+                placeholder="1.00"
+              />
+              {errors.precio && (
+                <p className="text-red-500 text-sm mt-1">{errors.precio}</p>
+              )}
             </div>
 
             <div>
               <label className="block font-semibold mb-1">Categoría</label>
-              <select value={categoria} onChange={(e) => setCategoria(e.target.value)}
-                className="w-full border border-gray-300 rounded px-4 py-2" required>
+              <select
+                value={categoria}
+                onChange={handleCategoriaChange}
+                className={`w-full border rounded px-4 py-2 ${
+                  errors.categoria ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+              >
                 <option value="">Seleccione una categoría</option>
                 {categorias.map((cat) => (
                   <option key={cat.id_categoria} value={cat.id_categoria}>
@@ -84,26 +301,60 @@ export default function AgregarProductos({ categorias }: Props) {
                   </option>
                 ))}
               </select>
+              {errors.categoria && (
+                <p className="text-red-500 text-sm mt-1">{errors.categoria}</p>
+              )}
             </div>
 
             <div>
               <label className="block font-semibold mb-1">Cantidad en stock</label>
-              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)}
-                className="w-full border border-gray-300 rounded px-4 py-2" required min="0"/>
+              <input
+                type="number"
+                value={stock}
+                onChange={handleStockChange}
+                className={`w-full border rounded px-4 py-2 ${
+                  errors.stock ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+                min="1"
+                max="1000"
+                placeholder="1"
+              />
+              {errors.stock && (
+                <p className="text-red-500 text-sm mt-1">{errors.stock}</p>
+              )}
             </div>
           </div>
 
           <div>
             <label className="block font-semibold mb-1">URL de la imagen del producto</label>
-            <input type="url" placeholder="https://ejemplo.com/imagen.jpg" value={imagen} onChange={(e) => setImagen(e.target.value)}
-              className="w-full border border-gray-300 rounded px-4 py-2" required/>
+            <input
+              type="url"
+              placeholder="https://ejemplo.com/imagen.jpg"
+              value={imagen}
+              onChange={handleImagenChange}
+              className={`w-full border rounded px-4 py-2 ${
+                errors.imagen ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+            />
+            {errors.imagen && (
+              <p className="text-red-500 text-sm mt-1">{errors.imagen}</p>
+            )}
+            <p className="text-gray-600 text-sm mt-1">
+              Formatos aceptados: JPG, JPEG, PNG, GIF, WEBP
+            </p>
           </div>
 
           <div className="flex justify-end gap-4 pt-4">
-            <Link href="/productos-micromarket" className="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded shadow-md">
+            <Link
+              href="/productos-micromarket"
+              className="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded shadow-md transition-colors"
+            >
               Cancelar
             </Link>
-            <button type="submit" className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-6 py-2 rounded shadow-md">
+            <button
+              type="submit"
+              className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-6 py-2 rounded shadow-md transition-colors"
+            >
               Guardar Producto
             </button>
           </div>

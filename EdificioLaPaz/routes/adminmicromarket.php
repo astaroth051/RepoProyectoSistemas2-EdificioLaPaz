@@ -42,6 +42,8 @@ Route::middleware(['auth', 'verified', 'checkRole:administrador'])->group(functi
     // Recarga de saldo
     Route::get('/recarga-saldo', [RecargaSaldoController::class, 'index'])->name('recarga-saldo');
     Route::post('/recarga-saldo', [RecargaSaldoController::class, 'recargar']);
+
+    Route::put('/productos-micromarket/{id}/activar', [ProductoMicromarketController::class, 'activar'])->name('productos-micromarket.activar');
 });
 
 // Logout

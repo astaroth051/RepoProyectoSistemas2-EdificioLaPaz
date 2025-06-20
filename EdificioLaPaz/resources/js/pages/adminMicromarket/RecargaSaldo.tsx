@@ -8,6 +8,7 @@ interface Copropietario {
   nombre: string;
   apellido: string;
   telefono: string;
+  saldo: number; // Campo saldo de la tabla cajasahorro
 }
 
 interface Flash {
@@ -147,7 +148,12 @@ export default function RecargaSaldo({ copropietarios }: Props) {
                   copropietarioSeleccionado?.id === copropietario.id ? "bg-gray-200" : ""
                 }`}
               >
-                {copropietario.nombre} {copropietario.apellido}
+                <div className="flex justify-between items-center">
+                  <span>{copropietario.nombre} {copropietario.apellido}</span>
+                  <span className="text-sm text-gray-600">
+                    Tel: {copropietario.telefono || 'No disponible'}
+                  </span>
+                </div>
               </li>
             ))}
             {copropietariosFiltrados.length === 0 && (
@@ -185,9 +191,19 @@ export default function RecargaSaldo({ copropietarios }: Props) {
               <label className="block font-semibold mb-1">Teléfono</label>
               <input
                 type="text"
-                value={copropietarioSeleccionado.telefono || ""}
+                value={copropietarioSeleccionado.telefono || "No disponible"}
                 disabled
                 className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Saldo Actual (Bs.)</label>
+              <input
+                type="text"
+                value={`${copropietarioSeleccionado.saldo || 0} Bs.`}
+                disabled
+                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 font-semibold text-green-600"
               />
             </div>
 
@@ -200,7 +216,7 @@ export default function RecargaSaldo({ copropietarios }: Props) {
                 placeholder="Ej. 50"
                 required
                 className="w-full border border-gray-300 rounded px-4 py-2"
-                min="1"
+                min="10"
                 step="0.01"
               />
             </div>

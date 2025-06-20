@@ -12,9 +12,25 @@ class RecargaSaldoController extends Controller
     public function index()
     {
         return Inertia::render('adminMicromarket/RecargaSaldo', [
-            'copropietarios' => User::select('id_user as id', 'name as nombre', 'lastname as apellido')
-                ->where('rol', 'copropietario')
-                ->get(),
+            'copropietarios' => User::select(
+                'users.id_user as id',
+                'users.name as nombre',
+                'users.lastname as apellido',
+                'users.telefono',
+                'cajasahorro.saldo'
+            )
+            ->leftJoin('cajasahorro', 'users.id_user', '=', 'cajasahorro.usuario_id')
+            ->where('users.rol', 'copropietario')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'nombre' => $user->nombre,
+                    'apellido' => $user->apellido,
+                    'telefono' => $user->telefono,
+                    'saldo' => $user->saldo ?? 0, // Si no tiene caja de ahorro, saldo = 0
+                ];
+            }),
         ]);
     }
 
