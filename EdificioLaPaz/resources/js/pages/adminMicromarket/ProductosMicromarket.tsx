@@ -16,6 +16,8 @@ interface Props {
 }
 
 export default function ProductosMicromarket({ productos }: Props) {
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+  const [productoAEliminar, setProductoAEliminar] = useState<Producto | null>(null);
   const [busqueda, setBusqueda] = useState("");
   const [filtroStock, setFiltroStock] = useState<"todos" | "conStock" | "sinStock">("todos");
 
@@ -30,8 +32,22 @@ export default function ProductosMicromarket({ productos }: Props) {
         : p.stock === 0;
     return coincideBusqueda && coincideStock;
   });
-const handleLogout = () => {
+
+  const handleLogout = () => {
     router.post("/logout");
+  };
+
+  const confirmarEliminacion = (producto: Producto) => {
+    setProductoAEliminar(producto);
+    setMostrarModalEliminar(true);
+  };
+
+  const eliminarProducto = () => {
+    if (productoAEliminar) {
+      router.delete(`/productos-micromarket/${productoAEliminar.id}`);
+      setMostrarModalEliminar(false);
+      setProductoAEliminar(null);
+    }
   };
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
@@ -101,11 +117,9 @@ const handleLogout = () => {
                       Editar
                     </Link>
                     <button
-                      onClick={() => {
-                        if (confirm(`¿Seguro quieres eliminar el producto "${p.nombre}"?`)) {
-                          router.delete(`/productos-micromarket/${p.id}`);
-                        }
-                      }} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                      onClick={() => confirmarEliminacion(p)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    >
                       Eliminar
                     </button>
                   </td>
@@ -122,6 +136,33 @@ const handleLogout = () => {
           </table>
         </div>
       </main>
+      {mostrarModalEliminar && productoAEliminar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">¿Estás seguro?</h3>
+            <p className="text-gray-600 mb-6">
+              Esta acción eliminará el producto <strong>{productoAEliminar.nombre}</strong>.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  setMostrarModalEliminar(false);
+                  setProductoAEliminar(null);
+                }}
+                className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 text-black"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={eliminarProducto}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

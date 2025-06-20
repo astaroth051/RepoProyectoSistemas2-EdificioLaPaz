@@ -1,6 +1,6 @@
 import { Head, router } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 interface Copropietario {
     id: number;

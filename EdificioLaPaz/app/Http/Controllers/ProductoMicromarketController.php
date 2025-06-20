@@ -129,7 +129,7 @@ class ProductoMicromarketController extends Controller
         $producto->estado = 0;  
         $producto->save();
 
-        return redirect()->route('productos-micromarket.index')->with('success', 'Producto eliminado correctamente.');
+        return redirect()->route('productos-micromarket')->with('success', 'Producto eliminado correctamente.');
     }
     public function dashboard()
     {
